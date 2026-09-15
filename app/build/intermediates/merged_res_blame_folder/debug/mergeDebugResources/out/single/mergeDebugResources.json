@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.example.smartshuffle.app-debug-4:/font_chakra_petch.ttf.flat",
+        "source": "com.example.smartshuffle.app-main-6:/font/chakra_petch.ttf"
+    },
+    {
+        "merged": "com.example.smartshuffle.app-debug-4:/font_orbitron.ttf.flat",
+        "source": "com.example.smartshuffle.app-main-6:/font/orbitron.ttf"
+    }
+]

@@ -1,0 +1,6 @@
+R_DEF: Internal format may change without notice
+local
+font chakra_petch
+font orbitron
+string app_name
+style Theme.SmartShuffle

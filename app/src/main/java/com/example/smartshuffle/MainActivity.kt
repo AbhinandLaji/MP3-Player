@@ -1,34 +1,157 @@
 package com.example.smartshuffle
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.smartshuffle.playback.PlaybackController
+import com.example.smartshuffle.ui.navigation.FolderDetailRoute
+import com.example.smartshuffle.ui.navigation.FoldersRoute
+import com.example.smartshuffle.ui.navigation.LibraryRoute
+import com.example.smartshuffle.ui.navigation.NowPlayingRoute
 import com.example.smartshuffle.ui.screens.LibraryScreen
+import com.example.smartshuffle.ui.screens.LibraryViewModel
+import com.example.smartshuffle.ui.screens.NowPlayingScreen
 import com.example.smartshuffle.ui.theme.SmartShuffleTheme
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var playbackController: PlaybackController
+    private var hasPermission by mutableStateOf(false)
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasPermission = isGranted
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val app = application as SmartShuffleApplication
+        playbackController = PlaybackController(this, app.container.rankingEngine)
+
+        checkAndRequestPermission()
+
+        enableEdgeToEdge()
         setContent {
             SmartShuffleTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "library") {
-                        composable("library") {
-                            LibraryScreen()
+                    if (hasPermission) {
+                        val app = application as SmartShuffleApplication
+                        val factory = LibraryViewModel.provideFactory(app, playbackController)
+                        val viewModel: LibraryViewModel = viewModel(factory = factory)
+
+                        val navController = rememberNavController()
+                        val currentBackStack by navController.currentBackStackEntryAsState()
+                        val currentDestination = currentBackStack?.destination
+
+                        androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                            androidx.compose.foundation.layout.Column(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                                // In type-safe navigation, we check the fully qualified route name or use a helper
+                                val isLibrary = currentDestination?.route?.contains("LibraryRoute") == true
+                                val isFolders = currentDestination?.route?.contains("FoldersRoute") == true
+                                
+                                if (isLibrary || isFolders) {
+                                    androidx.compose.material3.TabRow(
+                                        selectedTabIndex = if (isFolders) 1 else 0,
+                                        modifier = androidx.compose.ui.Modifier.statusBarsPadding()
+                                    ) {
+                                        androidx.compose.material3.Tab(
+                                            selected = isLibrary,
+                                            onClick = { navController.navigate(LibraryRoute) { popUpTo(navController.graph.startDestinationId) { saveState = true }; launchSingleTop = true; restoreState = true } },
+                                            text = { androidx.compose.material3.Text("Songs") }
+                                        )
+                                        androidx.compose.material3.Tab(
+                                            selected = isFolders,
+                                            onClick = { navController.navigate(FoldersRoute) { popUpTo(navController.graph.startDestinationId) { saveState = true }; launchSingleTop = true; restoreState = true } },
+                                            text = { androidx.compose.material3.Text("Folders") }
+                                        )
+                                    }
+                                }
+                                
+                                androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.weight(1f)) {
+                                    NavHost(navController = navController, startDestination = LibraryRoute) {
+                                        composable<LibraryRoute> {
+                                            LibraryScreen(viewModel = viewModel, navController = navController)
+                                        }
+                                        composable<FoldersRoute> {
+                                            com.example.smartshuffle.ui.screens.FoldersScreen(viewModel = viewModel, navController = navController)
+                                        }
+                                        composable<FolderDetailRoute> {
+                                            com.example.smartshuffle.ui.screens.FolderDetailScreen(viewModel = viewModel, navController = navController)
+                                        }
+                                        composable<NowPlayingRoute> {
+                                            NowPlayingScreen(viewModel = viewModel, navController = navController)
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            com.example.smartshuffle.ui.components.CyberpunkOverlay()
+                        }
+                    } else {
+                        PermissionDeniedScreen {
+                            checkAndRequestPermission()
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun checkAndRequestPermission() {
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+        
+        if (checkSelfPermission(permission) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            hasPermission = true
+        } else {
+            permissionLauncher.launch(permission)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        playbackController.release()
+    }
+}
+
+@Composable
+fun PermissionDeniedScreen(onRequestPermission: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Permission is required to access your music.")
+            Button(onClick = onRequestPermission) {
+                Text("Grant Permission")
             }
         }
     }

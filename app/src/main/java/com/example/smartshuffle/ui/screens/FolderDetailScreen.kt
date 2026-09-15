@@ -47,8 +47,10 @@ fun FolderDetailScreen(viewModel: LibraryViewModel, navController: NavController
             contentPadding = innerPadding
         ) {
             items(songs, key = { it.id }) { song ->
+                val isCurrentlyPlaying = song.id == currentSong?.id
                 SongRow(
                     song = song, 
+                    isCurrentlyPlaying = isCurrentlyPlaying,
                     onClick = { viewModel.playSong(song, songs) },
                     onQueueNext = { viewModel.queueSongNext(it) }
                 )

@@ -7,4 +7,7 @@ import androidx.room.Query
 interface QueueAssociationDao {
     @Query("SELECT * FROM queue_associations")
     fun getAllAssociations(): List<QueueAssociation>
+    
+    @Query("SELECT * FROM queue_associations WHERE songIdA = :songId")
+    suspend fun getAssociationsForSong(songId: Long): List<QueueAssociation>
 }

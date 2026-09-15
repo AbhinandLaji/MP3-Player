@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -103,6 +104,11 @@ class PlaybackController(
                 }
             })
             _volume.value = controller.volume
+            
+            if (controller.isPlaying) {
+                _isPlaying.value = true
+                startProgressJob()
+            }
         }
     }
 
@@ -118,11 +124,11 @@ class PlaybackController(
     private fun startProgressJob() {
         progressJob?.cancel()
         progressJob = scope.launch {
-            while (isActive) {
+            while (isActive && mediaController?.isPlaying == true) {
                 mediaController?.let {
                     _currentPosition.value = it.currentPosition.coerceAtLeast(0)
                 }
-                delay(1000)
+                delay(200L)
             }
         }
     }
@@ -168,7 +174,10 @@ class PlaybackController(
     }
 
     private suspend fun appendNextShuffleSong(currentSongId: Long) {
-        val nextSong = rankingEngine.selectNextShuffleSong(excludeSongId = currentSongId)
+        val nextSong = rankingEngine.selectNextShuffleSong(
+            currentSongId = currentSongId,
+            playlistContext = currentPlaylist
+        )
         nextSong?.let {
             val mediaItem = createMediaItem(it)
             // Switch back to Main thread for ExoPlayer modification
@@ -228,6 +237,7 @@ class PlaybackController(
 
     fun release() {
         progressJob?.cancel()
+        scope.cancel()
         controllerFuture?.let { MediaController.releaseFuture(it) }
     }
 }

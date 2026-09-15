@@ -29,7 +29,7 @@ class DefaultAppContainer(private val applicationContext: Context) : AppContaine
     }
     
     override val rankingEngine: RankingEngine by lazy {
-        RankingEngine(database.rankDao(), database.playHistoryDao(), database.songDao())
+        RankingEngine(database.rankDao(), database.playHistoryDao(), database.songDao(), database.queueAssociationDao())
     }
     
     override val playHistoryDao: PlayHistoryDao by lazy {

@@ -1,158 +1,262 @@
 package com.example.smartshuffle.ui.screens
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.icons.filled.VolumeUp
-import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import java.util.Locale
+import com.example.smartshuffle.data.Song
+import com.example.smartshuffle.ui.components.GlitchText
+import com.example.smartshuffle.ui.components.NeonIconButton
+import com.example.smartshuffle.ui.theme.CutCornerShape6
+import android.media.MediaMetadataRetriever
+import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.ImageBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun rememberAlbumArt(uri: android.net.Uri): ImageBitmap? {
+    val context = LocalContext.current
+    var bitmap by remember(uri) { mutableStateOf<ImageBitmap?>(null) }
+
+    LaunchedEffect(uri) {
+        withContext(Dispatchers.IO) {
+            val retriever = MediaMetadataRetriever()
+            try {
+                retriever.setDataSource(context, uri)
+                val artBytes = retriever.embeddedPicture
+                if (artBytes != null) {
+                    bitmap = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.size).asImageBitmap()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                retriever.release()
+            }
+        }
+    }
+    return bitmap
+}
+
 @Composable
 fun NowPlayingScreen(viewModel: LibraryViewModel, navController: NavController) {
     val currentSong by viewModel.currentSong.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val isShuffleEnabled by viewModel.isShuffleEnabled.collectAsState()
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
     val volume by viewModel.volume.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Now Playing") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    if (currentSong != null) {
+        NowPlayingScreenContent(
+            song = currentSong!!,
+            isPlaying = isPlaying,
+            isShuffleEnabled = isShuffleEnabled,
+            currentPositionMs = currentPosition,
+            totalDurationMs = duration,
+            currentVolume = volume,
+            onPausePlayClick = { viewModel.togglePlayPause() },
+            onNextClick = { viewModel.skipNext() },
+            onPrevClick = { viewModel.skipPrevious() },
+            onShuffleToggle = { viewModel.toggleShuffle() },
+            onSeek = { viewModel.seekTo(it) },
+            onVolumeChange = { viewModel.setVolume(it) }
+        )
+    } else {
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+    }
+}
+
+@Composable
+fun NowPlayingScreenContent(
+    song: Song,
+    isPlaying: Boolean,
+    isShuffleEnabled: Boolean,
+    currentPositionMs: Long,
+    totalDurationMs: Long,
+    currentVolume: Float, // 0f to 1f
+    onPausePlayClick: () -> Unit,
+    onNextClick: () -> Unit,
+    onPrevClick: () -> Unit,
+    onShuffleToggle: () -> Unit,
+    onSeek: (Long) -> Unit,
+    onVolumeChange: (Float) -> Unit
+) {
+    val albumArt = rememberAlbumArt(uri = android.net.Uri.parse(song.filePath))
+
+    // --- THE SEEK BAR BUG FIX ---
+    var dragProgress by remember { mutableFloatStateOf(0f) }
+    var isDragging by remember { mutableStateOf(false) }
+
+    // Use the drag state if the user is holding the slider, otherwise use ExoPlayer's state
+    val displayProgress = if (isDragging) dragProgress else (currentPositionMs.toFloat() / totalDurationMs.coerceAtLeast(1).toFloat())
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // MAIN CONTENT COLUMN
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(end = 64.dp) // Leave room for the volume bar on the right!
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Surface(
-                modifier = Modifier
-                    .size(250.dp)
-                    .padding(16.dp),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.secondaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("No Art", style = MaterialTheme.typography.titleLarge)
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Text(
-                text = currentSong?.title ?: "Unknown Title",
-                style = MaterialTheme.typography.headlineMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = currentSong?.artist ?: "Unknown Artist",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            
             Spacer(modifier = Modifier.height(32.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            GlitchText(text = "NOW PLAYING")
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // CYBERPUNK ALBUM ART
+            Surface(
+                shape = CutCornerShape6,
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
             ) {
-                Text(text = formatDuration(currentPosition), style = MaterialTheme.typography.bodySmall)
-                Slider(
-                    value = if (duration > 0) currentPosition.toFloat() else 0f,
-                    onValueChange = { viewModel.seekTo(it.toLong()) },
-                    valueRange = 0f..(if (duration > 0) duration.toFloat() else 1f),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
-                )
-                Text(text = formatDuration(duration), style = MaterialTheme.typography.bodySmall)
+                if (albumArt != null) {
+                    androidx.compose.foundation.Image(
+                        bitmap = albumArt,
+                        contentDescription = "Album Art",
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MusicNote,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        )
+                    }
+                }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = song.title.uppercase(),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = song.artist.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // FIXED SEEK BAR
+            Slider(
+                value = displayProgress.coerceIn(0f, 1f),
+                onValueChange = {
+                    isDragging = true
+                    dragProgress = it
+                },
+                onValueChangeFinished = {
+                    isDragging = false
+                    onSeek((dragProgress * totalDurationMs).toLong())
+                },
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // CYBERPUNK CONTROLS ROW
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val shuffleEnabled by viewModel.isShuffleEnabled.collectAsState()
-                
-                IconButton(onClick = { viewModel.toggleShuffle() }, modifier = Modifier.size(64.dp)) {
+                // Shuffle (Red if active, Blue if inactive)
+                IconButton(onClick = onShuffleToggle) {
                     Icon(
-                        Icons.Default.Shuffle, 
+                        imageVector = Icons.Default.Shuffle,
                         contentDescription = "Shuffle",
-                        tint = if (shuffleEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isShuffleEnabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                IconButton(onClick = { viewModel.skipPrevious() }, modifier = Modifier.size(64.dp)) {
-                    Icon(Icons.Default.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(48.dp))
-                }
-                
-                FloatingActionButton(
-                    onClick = { viewModel.togglePlayPause() },
-                    modifier = Modifier.size(80.dp)
-                ) {
-                    Icon(
-                        if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-                
-                IconButton(onClick = { viewModel.skipNext() }, modifier = Modifier.size(64.dp)) {
-                    Icon(Icons.Default.SkipNext, contentDescription = "Next", modifier = Modifier.size(48.dp))
-                }
+                NeonIconButton(icon = Icons.Default.SkipPrevious, contentDescription = "Prev", onClick = onPrevClick)
+
+                // Play/Pause gets a larger visual emphasis
+                NeonIconButton(
+                    icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                    contentDescription = "Play/Pause",
+                    modifier = Modifier.size(80.dp),
+                    onClick = onPausePlayClick
+                )
+
+                NeonIconButton(icon = Icons.Default.SkipNext, contentDescription = "Next", onClick = onNextClick)
             }
+            
+            Spacer(modifier = Modifier.weight(0.4f))
+        }
 
-            Spacer(modifier = Modifier.height(32.dp))
+        // --- RIGHT-SIDE VERTICAL VOLUME BAR ---
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight(0.6f) // Takes up 60% of screen height
+                .padding(end = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                imageVector = Icons.Default.VolumeUp,
+                contentDescription = "Max Volume",
+                tint = MaterialTheme.colorScheme.primary
+            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Default.VolumeUp, contentDescription = "Volume")
+            // Rotate a standard horizontal slider 90 degrees to make it vertical
+            Box(modifier = Modifier.weight(1f).width(48.dp), contentAlignment = Alignment.Center) {
                 Slider(
-                    value = volume,
-                    onValueChange = { viewModel.setVolume(it) },
-                    valueRange = 0f..1f,
+                    value = currentVolume,
+                    onValueChange = onVolumeChange,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
+                        .graphicsLayer {
+                            rotationZ = -90f
+                            transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.5f)
+                        }
+                        .requiredWidth(250.dp), // Height of the vertical bar
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
                 )
             }
+
+            Icon(
+                imageVector = Icons.Default.VolumeMute,
+                contentDescription = "Mute",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
-}
-
-private fun formatDuration(durationMs: Long): String {
-    val totalSeconds = durationMs / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 }

@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +39,7 @@ import androidx.navigation.NavController
 import com.example.smartshuffle.data.Song
 import com.example.smartshuffle.ui.navigation.NowPlayingRoute
 import com.example.smartshuffle.ui.theme.CutCornerShape6
+import com.example.smartshuffle.ui.components.EqBars
 import java.io.File
 import java.util.Locale
 
@@ -71,8 +74,10 @@ fun LibraryScreen(viewModel: LibraryViewModel, navController: NavController) {
                 contentPadding = innerPadding
             ) {
                 items(songs, key = { it.id }) { song ->
+                    val isCurrentlyPlaying = song.id == currentSong?.id
                     SongRow(
                         song = song, 
+                        isCurrentlyPlaying = isCurrentlyPlaying,
                         onClick = { viewModel.playSong(song) },
                         onQueueNext = { viewModel.queueSongNext(it) }
                     )
@@ -85,6 +90,7 @@ fun LibraryScreen(viewModel: LibraryViewModel, navController: NavController) {
 @Composable
 fun SongRow(
     song: Song, 
+    isCurrentlyPlaying: Boolean,
     onClick: () -> Unit,
     onQueueNext: (Song) -> Unit
 ) {
@@ -107,6 +113,7 @@ fun SongRow(
             Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = song.title,
+                color = if (isCurrentlyPlaying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -124,6 +131,11 @@ fun SongRow(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(end = 8.dp)
         )
+        
+        if (isCurrentlyPlaying) {
+            EqBars(isPlaying = true, color = MaterialTheme.colorScheme.secondary)
+            Spacer(modifier = Modifier.width(16.dp))
+        }
         
         Box {
             IconButton(onClick = { showMenu = true }) {

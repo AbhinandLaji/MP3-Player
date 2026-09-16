@@ -39,6 +39,8 @@ class LibraryViewModel(
     val duration: StateFlow<Long> = playbackController.duration
     val volume: StateFlow<Float> = playbackController.volume
     val isShuffleEnabled: StateFlow<Boolean> = playbackController.isShuffleEnabled
+    val currentQueue: StateFlow<List<Song>> = playbackController.currentQueue
+    val sleepTimerTargetMillis: StateFlow<Long?> = playbackController.sleepTimerTargetMillis
     
     val folders: StateFlow<List<FolderSummary>> = songRepository.getFolders()
         .stateIn(
@@ -67,8 +69,32 @@ class LibraryViewModel(
         playbackController.playFromPlaylist(song, playlist)
     }
 
-    fun queueSongNext(song: Song) {
-        playbackController.queueSongNext(song)
+    fun playNext(song: Song) {
+        val current = currentSong.value
+        playbackController.playNext(song)
+        if (current != null) {
+            viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                songRepository.recordQueueAssociation(current.id, song.id)
+            }
+        }
+    }
+
+    fun addToQueue(song: Song) {
+        val current = currentSong.value
+        playbackController.addToQueue(song)
+        if (current != null) {
+            viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                songRepository.recordQueueAssociation(current.id, song.id)
+            }
+        }
+    }
+
+    fun moveQueueItem(fromIndex: Int, toIndex: Int) {
+        playbackController.moveQueueItem(fromIndex, toIndex)
+    }
+
+    fun removeFromQueue(index: Int) {
+        playbackController.removeFromQueue(index)
     }
 
     fun togglePlayPause() {
@@ -97,6 +123,14 @@ class LibraryViewModel(
 
     fun setVolume(volume: Float) {
         playbackController.setVolume(volume)
+    }
+
+    fun startSleepTimer(durationMinutes: Int) {
+        playbackController.startSleepTimer(durationMinutes)
+    }
+
+    fun cancelSleepTimer() {
+        playbackController.cancelSleepTimer()
     }
 
     companion object {

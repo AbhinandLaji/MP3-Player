@@ -1,4 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.SmartShuffle" parent="android:Theme.Material.Light.NoActionBar">
     </style>
+    <style name="Theme.SmartShuffle.Splash" parent="Theme.SplashScreen">
+        <!-- System window background during early process launch -->
+        <item name="windowSplashScreenBackground">#070B14</item>
+        <!-- Use an empty transparent drawable or your launcher icon -->
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.SmartShuffle</item>
+    </style>
 </resources>

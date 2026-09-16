@@ -26,7 +26,8 @@ import kotlinx.coroutines.launch
 
 class PlaybackController(
     private val context: Context,
-    private val rankingEngine: RankingEngine
+    private val rankingEngine: RankingEngine,
+    private val userPreferences: com.example.smartshuffle.data.UserPreferences
 ) {
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
@@ -42,6 +43,9 @@ class PlaybackController(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
+    private val _currentQueue = MutableStateFlow<List<Song>>(emptyList())
+    val currentQueue: StateFlow<List<Song>> = _currentQueue.asStateFlow()
+
     private val _currentSong = MutableStateFlow<Song?>(null)
     val currentSong: StateFlow<Song?> = _currentSong.asStateFlow()
 
@@ -54,6 +58,9 @@ class PlaybackController(
     private val _volume = MutableStateFlow(1f)
     val volume: StateFlow<Float> = _volume.asStateFlow()
 
+    private val _sleepTimerTargetMillis = MutableStateFlow<Long?>(null)
+    val sleepTimerTargetMillis: StateFlow<Long?> = _sleepTimerTargetMillis.asStateFlow()
+
     init {
         val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
         controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
@@ -64,11 +71,33 @@ class PlaybackController(
             },
             ContextCompat.getMainExecutor(context)
         )
+        
+        scope.launch {
+            userPreferences.sleepTimerTargetFlow.collect { target ->
+                if (target != null) {
+                    if (target > System.currentTimeMillis()) {
+                        _sleepTimerTargetMillis.value = target
+                    } else {
+                        userPreferences.clearSleepTimerTarget()
+                        _sleepTimerTargetMillis.value = null
+                    }
+                } else {
+                    _sleepTimerTargetMillis.value = null
+                }
+            }
+        }
     }
 
     private fun setupController() {
         mediaController?.let { controller ->
             controller.addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    super.onPlaybackStateChanged(playbackState)
+                    if (playbackState == androidx.media3.common.Player.STATE_READY) {
+                        _duration.value = controller.duration.coerceAtLeast(0L)
+                    }
+                }
+
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     _isPlaying.value = isPlaying
                     if (isPlaying) {
@@ -79,6 +108,17 @@ class PlaybackController(
                 }
 
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    super.onMediaItemTransition(mediaItem, reason)
+                    
+                    if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+                        val target = _sleepTimerTargetMillis.value
+                        if (target != null && System.currentTimeMillis() >= target) {
+                            controller.pause()
+                            cancelSleepTimer()
+                            return
+                        }
+                    }
+
                     updateCurrentSong(mediaItem)
                     _duration.value = controller.duration.coerceAtLeast(0)
 
@@ -99,6 +139,11 @@ class PlaybackController(
                     }
                 }
 
+                override fun onTimelineChanged(timeline: androidx.media3.common.Timeline, reason: Int) {
+                    super.onTimelineChanged(timeline, reason)
+                    updateQueueState()
+                }
+
                 override fun onVolumeChanged(volume: Float) {
                     _volume.value = volume
                 }
@@ -109,6 +154,22 @@ class PlaybackController(
                 _isPlaying.value = true
                 startProgressJob()
             }
+            updateQueueState()
+        }
+    }
+
+    private fun updateQueueState() {
+        mediaController?.let { controller ->
+            val newQueue = mutableListOf<Song>()
+            for (i in 0 until controller.mediaItemCount) {
+                val mediaItem = controller.getMediaItemAt(i)
+                val songId = mediaItem.mediaId.toLongOrNull()
+                val song = currentPlaylist.find { it.id == songId }
+                if (song != null) {
+                    newQueue.add(song)
+                }
+            }
+            _currentQueue.value = newQueue
         }
     }
 
@@ -218,12 +279,32 @@ class PlaybackController(
         mediaController?.seekToPreviousMediaItem()
     }
     
-    fun queueSongNext(song: Song) {
+    fun playNext(song: Song) {
         mediaController?.let { controller ->
             val mediaItem = createMediaItem(song)
-            val nextIndex = controller.currentMediaItemIndex + 1
+            val nextIndex = (controller.currentMediaItemIndex + 1).coerceAtMost(controller.mediaItemCount)
             controller.addMediaItem(nextIndex, mediaItem)
+            if (!currentPlaylist.contains(song)) {
+                currentPlaylist = currentPlaylist + song
+            }
         }
+    }
+
+    fun addToQueue(song: Song) {
+        mediaController?.let { controller ->
+            controller.addMediaItem(createMediaItem(song))
+            if (!currentPlaylist.contains(song)) {
+                currentPlaylist = currentPlaylist + song
+            }
+        }
+    }
+
+    fun moveQueueItem(fromIndex: Int, toIndex: Int) {
+        mediaController?.moveMediaItem(fromIndex, toIndex)
+    }
+
+    fun removeFromQueue(index: Int) {
+        mediaController?.removeMediaItem(index)
     }
 
     fun seekTo(position: Long) {
@@ -239,5 +320,20 @@ class PlaybackController(
         progressJob?.cancel()
         scope.cancel()
         controllerFuture?.let { MediaController.releaseFuture(it) }
+    }
+
+    fun startSleepTimer(durationMinutes: Int) {
+        val target = System.currentTimeMillis() + (durationMinutes * 60_000L)
+        _sleepTimerTargetMillis.value = target
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setSleepTimerTarget(target)
+        }
+    }
+
+    fun cancelSleepTimer() {
+        _sleepTimerTargetMillis.value = null
+        scope.launch(Dispatchers.IO) {
+            userPreferences.clearSleepTimerTarget()
+        }
     }
 }

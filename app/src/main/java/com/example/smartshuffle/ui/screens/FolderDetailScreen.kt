@@ -52,7 +52,8 @@ fun FolderDetailScreen(viewModel: LibraryViewModel, navController: NavController
                     song = song, 
                     isCurrentlyPlaying = isCurrentlyPlaying,
                     onClick = { viewModel.playSong(song, songs) },
-                    onQueueNext = { viewModel.queueSongNext(it) }
+                    onPlayNext = { viewModel.playNext(it) },
+                    onAddToQueue = { viewModel.addToQueue(it) }
                 )
             }
         }

@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlaylistPlay
+import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -39,7 +41,9 @@ import androidx.navigation.NavController
 import com.example.smartshuffle.data.Song
 import com.example.smartshuffle.ui.navigation.NowPlayingRoute
 import com.example.smartshuffle.ui.theme.CutCornerShape6
+import com.example.smartshuffle.ui.theme.NeonRed
 import com.example.smartshuffle.ui.components.EqBars
+import com.example.smartshuffle.ui.components.activeTrackCyberBorder
 import java.io.File
 import java.util.Locale
 
@@ -79,7 +83,8 @@ fun LibraryScreen(viewModel: LibraryViewModel, navController: NavController) {
                         song = song, 
                         isCurrentlyPlaying = isCurrentlyPlaying,
                         onClick = { viewModel.playSong(song) },
-                        onQueueNext = { viewModel.queueSongNext(it) }
+                        onPlayNext = { viewModel.playNext(it) },
+                        onAddToQueue = { viewModel.addToQueue(it) }
                     )
                 }
             }
@@ -92,16 +97,26 @@ fun SongRow(
     song: Song, 
     isCurrentlyPlaying: Boolean,
     onClick: () -> Unit,
-    onQueueNext: (Song) -> Unit
+    onPlayNext: (Song) -> Unit,
+    onAddToQueue: (Song) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    Surface(
-        shape = CutCornerShape6,
-        color = MaterialTheme.colorScheme.surface,
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
+            .then(
+                if (isCurrentlyPlaying) {
+                    Modifier.activeTrackCyberBorder(
+                        borderColor = NeonRed,
+                        backgroundColor = NeonRed.copy(alpha = 0.12f),
+                        cutSize = 10.dp
+                    )
+                } else {
+                    Modifier.background(MaterialTheme.colorScheme.surface, CutCornerShape6)
+                }
+            )
             .clickable(onClick = onClick)
     ) {
         Row(
@@ -151,11 +166,20 @@ fun SongRow(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Play Next (Queue)") },
+                    text = { Text("PLAY NEXT") },
                     onClick = {
-                        onQueueNext(song)
+                        onPlayNext(song)
                         showMenu = false
-                    }
+                    },
+                    leadingIcon = { Icon(Icons.Default.PlaylistPlay, contentDescription = null) }
+                )
+                DropdownMenuItem(
+                    text = { Text("ADD TO QUEUE") },
+                    onClick = {
+                        onAddToQueue(song)
+                        showMenu = false
+                    },
+                    leadingIcon = { Icon(Icons.Default.Queue, contentDescription = null) }
                 )
             }
         }

@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.room.CoroutinesRoom;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
+import androidx.sqlite.db.SupportSQLiteStatement;
 import java.lang.Class;
 import java.lang.Exception;
 import java.lang.Object;
@@ -19,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.annotation.processing.Generated;
+import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 
 @Generated("androidx.room.RoomProcessor")
@@ -26,8 +29,46 @@ import kotlin.coroutines.Continuation;
 public final class QueueAssociationDao_Impl implements QueueAssociationDao {
   private final RoomDatabase __db;
 
+  private final SharedSQLiteStatement __preparedStmtOfIncrementAssociationCount;
+
   public QueueAssociationDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
+    this.__preparedStmtOfIncrementAssociationCount = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "INSERT INTO queue_associations (songIdA, songIdB, count) VALUES (?, ?, 1) ON CONFLICT(songIdA, songIdB) DO UPDATE SET count = count + 1";
+        return _query;
+      }
+    };
+  }
+
+  @Override
+  public Object incrementAssociationCount(final long songIdA, final long songIdB,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfIncrementAssociationCount.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, songIdA);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, songIdB);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeInsert();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfIncrementAssociationCount.release(_stmt);
+        }
+      }
+    }, $completion);
   }
 
   @Override

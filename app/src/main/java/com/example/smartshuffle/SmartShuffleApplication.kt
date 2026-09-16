@@ -13,6 +13,7 @@ interface AppContainer {
     val songRepository: SongRepository
     val rankingEngine: RankingEngine
     val playHistoryDao: PlayHistoryDao
+    val userPreferences: com.example.smartshuffle.data.UserPreferences
 }
 
 class DefaultAppContainer(private val applicationContext: Context) : AppContainer {
@@ -25,7 +26,7 @@ class DefaultAppContainer(private val applicationContext: Context) : AppContaine
     }
 
     override val songRepository: SongRepository by lazy {
-        SongRepositoryImpl(database.songDao(), applicationContext)
+        SongRepositoryImpl(database.songDao(), database.queueAssociationDao(), applicationContext)
     }
     
     override val rankingEngine: RankingEngine by lazy {
@@ -34,6 +35,10 @@ class DefaultAppContainer(private val applicationContext: Context) : AppContaine
     
     override val playHistoryDao: PlayHistoryDao by lazy {
         database.playHistoryDao()
+    }
+
+    override val userPreferences: com.example.smartshuffle.data.UserPreferences by lazy {
+        com.example.smartshuffle.data.UserPreferences(applicationContext)
     }
 }
 

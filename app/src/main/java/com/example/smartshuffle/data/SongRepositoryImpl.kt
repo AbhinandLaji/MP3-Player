@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 
 class SongRepositoryImpl(
     private val songDao: SongDao,
+    private val queueAssociationDao: QueueAssociationDao,
     private val context: Context
 ) : SongRepository {
     
@@ -50,5 +51,10 @@ class SongRepositoryImpl(
                 songDao.update(updatedSong)
             }
         }
+    }
+
+    override suspend fun recordQueueAssociation(currentSongId: Long, queuedSongId: Long) {
+        if (currentSongId == queuedSongId || currentSongId <= 0L) return
+        queueAssociationDao.incrementAssociationCount(currentSongId, queuedSongId)
     }
 }

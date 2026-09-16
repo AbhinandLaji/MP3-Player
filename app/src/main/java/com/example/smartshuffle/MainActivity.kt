@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,30 +50,37 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         
         val app = application as SmartShuffleApplication
-        playbackController = PlaybackController(this, app.container.rankingEngine)
+        playbackController = PlaybackController(this, app.container.rankingEngine, app.container.userPreferences)
 
         checkAndRequestPermission()
 
         enableEdgeToEdge()
         setContent {
             SmartShuffleTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    if (hasPermission) {
-                        val app = application as SmartShuffleApplication
-                        val factory = LibraryViewModel.provideFactory(app, playbackController)
-                        val viewModel: LibraryViewModel = viewModel(factory = factory)
+                var showBootScreen by remember { mutableStateOf(true) }
 
-                        val navController = rememberNavController()
-                        val currentBackStack by navController.currentBackStackEntryAsState()
-                        val currentDestination = currentBackStack?.destination
+                if (showBootScreen) {
+                    com.example.smartshuffle.ui.screens.CyberAudioBootScreen(
+                        onFinished = { showBootScreen = false }
+                    )
+                } else {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        if (hasPermission) {
+                            val factory = LibraryViewModel.provideFactory(app, playbackController)
+                            val viewModel: LibraryViewModel = viewModel(factory = factory)
 
-                        androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                            val navController = rememberNavController()
+                            val currentBackStack by navController.currentBackStackEntryAsState()
+                            val currentDestination = currentBackStack?.destination
+
+                            androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
                             androidx.compose.foundation.layout.Column(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
                                 // In type-safe navigation, we check the fully qualified route name or use a helper
                                 val isLibrary = currentDestination?.route?.contains("LibraryRoute") == true
@@ -121,10 +130,11 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+                }
             }
         }
     }
-
+    
     private fun checkAndRequestPermission() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_AUDIO

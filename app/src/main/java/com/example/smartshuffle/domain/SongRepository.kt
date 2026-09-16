@@ -7,4 +7,5 @@ interface SongRepository {
     fun getAllSongs(): Flow<List<Song>>
     fun getFolders(): Flow<List<FolderSummary>>
     suspend fun syncLibrary()
+    suspend fun recordQueueAssociation(currentSongId: Long, queuedSongId: Long)
 }

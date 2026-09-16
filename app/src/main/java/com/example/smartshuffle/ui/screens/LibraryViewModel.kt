@@ -10,6 +10,7 @@ import com.example.smartshuffle.data.PlayHistoryDao
 import com.example.smartshuffle.domain.FolderSummary
 import com.example.smartshuffle.domain.SongRepository
 import com.example.smartshuffle.playback.PlaybackController
+import com.example.smartshuffle.playback.SystemVolumeManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 class LibraryViewModel(
     private val songRepository: SongRepository,
     private val playHistoryDao: PlayHistoryDao,
-    private val playbackController: PlaybackController
+    private val playbackController: PlaybackController,
+    private val volumeManager: SystemVolumeManager
 ) : ViewModel() {
 
     private val baseSongs = songRepository.getAllSongs()
@@ -38,16 +40,31 @@ class LibraryViewModel(
     val currentPosition: StateFlow<Long> = playbackController.currentPosition
     val duration: StateFlow<Long> = playbackController.duration
     val volume: StateFlow<Float> = playbackController.volume
+    val systemVolume: StateFlow<Float> = volumeManager.observeVolume()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = if (volumeManager.maxVolume > 0) volumeManager.currentVolume.toFloat() / volumeManager.maxVolume else 0f
+        )
     val isShuffleEnabled: StateFlow<Boolean> = playbackController.isShuffleEnabled
     val currentQueue: StateFlow<List<Song>> = playbackController.currentQueue
     val sleepTimerTargetMillis: StateFlow<Long?> = playbackController.sleepTimerTargetMillis
     
-    val folders: StateFlow<List<FolderSummary>> = songRepository.getFolders()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+    val folders: StateFlow<List<FolderSummary>> = kotlinx.coroutines.flow.combine(
+        songRepository.getFolders(),
+        songRepository.getFavoriteFolders()
+    ) { rawFolders, favorites ->
+        rawFolders.map { folder ->
+            folder.copy(isFavorite = favorites.contains(folder.folderPath))
+        }.sortedWith(
+            compareByDescending<FolderSummary> { it.isFavorite }
+                .thenBy { it.folderName.lowercase() }
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     private val _selectedFolderPath = MutableStateFlow<String?>(null)
     val selectedFolderSongs: StateFlow<List<Song>> = kotlinx.coroutines.flow.combine(baseSongs, _selectedFolderPath) { allSongs: List<Song>, path: String? ->
@@ -57,6 +74,12 @@ class LibraryViewModel(
 
     fun setSelectedFolder(path: String) {
         _selectedFolderPath.value = path
+    }
+
+    fun toggleFavoriteFolder(folderPath: String) {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            songRepository.toggleFavoriteFolder(folderPath)
+        }
     }
 
     init {
@@ -125,6 +148,12 @@ class LibraryViewModel(
         playbackController.setVolume(volume)
     }
 
+    fun setSystemVolume(progress: Float) {
+        val max = volumeManager.maxVolume
+        val targetLevel = (progress * max).toInt()
+        volumeManager.setVolume(targetLevel)
+    }
+
     fun startSleepTimer(durationMinutes: Int) {
         playbackController.startSleepTimer(durationMinutes)
     }
@@ -141,7 +170,12 @@ class LibraryViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val container = application.container
-                return LibraryViewModel(container.songRepository, container.playHistoryDao, playbackController) as T
+                return LibraryViewModel(
+                    container.songRepository, 
+                    container.playHistoryDao, 
+                    playbackController,
+                    SystemVolumeManager(application)
+                ) as T
             }
         }
     }

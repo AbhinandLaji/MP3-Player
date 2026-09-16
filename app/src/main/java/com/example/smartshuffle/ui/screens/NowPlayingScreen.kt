@@ -76,7 +76,7 @@ fun NowPlayingScreen(viewModel: LibraryViewModel, navController: NavController) 
     val isShuffleEnabled by viewModel.isShuffleEnabled.collectAsState()
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
-    val volume by viewModel.volume.collectAsState()
+    val systemVolume by viewModel.systemVolume.collectAsState()
     val sleepTimerTargetMillis by viewModel.sleepTimerTargetMillis.collectAsState()
     
     var showQueue by remember { mutableStateOf(false) }
@@ -89,7 +89,7 @@ fun NowPlayingScreen(viewModel: LibraryViewModel, navController: NavController) 
             isShuffleEnabled = isShuffleEnabled,
             currentPositionMs = currentPosition,
             totalDurationMs = duration,
-            currentVolume = volume,
+            currentVolume = systemVolume,
             onPausePlayClick = { viewModel.togglePlayPause() },
             onNextClick = { viewModel.skipNext() },
             onPrevClick = { viewModel.skipPrevious() },
@@ -98,7 +98,7 @@ fun NowPlayingScreen(viewModel: LibraryViewModel, navController: NavController) 
             onSleepTimerClick = { showSleepTimer = true },
             isSleepTimerActive = sleepTimerTargetMillis != null,
             onSeek = { viewModel.seekTo(it) },
-            onVolumeChange = { viewModel.setVolume(it) }
+            onVolumeChange = { viewModel.setSystemVolume(it) }
         )
         
         if (showQueue) {
@@ -362,18 +362,20 @@ fun NowPlayingScreenContent(
             )
 
             var isVolumeDragging by remember { mutableStateOf(false) }
+            var dragVolumeProgress by remember { mutableFloatStateOf(0f) }
             val activeVolumeColor = if (isVolumeDragging) NeonRed else NeonBlue
 
             // Rotate a standard horizontal slider 90 degrees to make it vertical
             Box(modifier = Modifier.weight(1f).width(48.dp), contentAlignment = Alignment.Center) {
                 Slider(
-                    value = currentVolume,
+                    value = if (isVolumeDragging) dragVolumeProgress else currentVolume,
                     onValueChange = {
                         isVolumeDragging = true
-                        onVolumeChange(it)
+                        dragVolumeProgress = it
                     },
                     onValueChangeFinished = {
                         isVolumeDragging = false
+                        onVolumeChange(dragVolumeProgress)
                     },
                     modifier = Modifier
                         .graphicsLayer {

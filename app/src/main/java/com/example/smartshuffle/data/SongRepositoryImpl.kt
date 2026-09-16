@@ -5,6 +5,8 @@ import com.example.smartshuffle.domain.FolderSummary
 import com.example.smartshuffle.domain.SongRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import androidx.datastore.preferences.core.edit
+import com.example.smartshuffle.data.UserPreferences.Companion.FAVORITE_FOLDERS_KEY
 
 class SongRepositoryImpl(
     private val songDao: SongDao,
@@ -29,6 +31,23 @@ class SongRepositoryImpl(
                     songCount = folderSongs.size
                 )
             }.sortedBy { it.folderName }
+        }
+    }
+
+    override fun getFavoriteFolders(): Flow<Set<String>> {
+        return context.dataStore.data.map { preferences ->
+            preferences[FAVORITE_FOLDERS_KEY] ?: emptySet()
+        }
+    }
+
+    override suspend fun toggleFavoriteFolder(folderPath: String) {
+        context.dataStore.edit { preferences ->
+            val current = preferences[FAVORITE_FOLDERS_KEY] ?: emptySet()
+            if (current.contains(folderPath)) {
+                preferences[FAVORITE_FOLDERS_KEY] = current - folderPath
+            } else {
+                preferences[FAVORITE_FOLDERS_KEY] = current + folderPath
+            }
         }
     }
 

@@ -2,8 +2,14 @@ package com.example.smartshuffle
 
 import android.Manifest
 import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +46,9 @@ import com.example.smartshuffle.ui.theme.SmartShuffleTheme
 
 class MainActivity : ComponentActivity() {
 
+    private val _shouldOpenNowPlaying = MutableStateFlow(false)
+    val shouldOpenNowPlaying: StateFlow<Boolean> = _shouldOpenNowPlaying.asStateFlow()
+
     private lateinit var playbackController: PlaybackController
     private var hasPermission by mutableStateOf(false)
 
@@ -52,6 +61,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        checkIntent(intent)
         
         val app = application as SmartShuffleApplication
         playbackController = PlaybackController(this, app.container.rankingEngine, app.container.userPreferences)
@@ -79,6 +89,17 @@ class MainActivity : ComponentActivity() {
                             val navController = rememberNavController()
                             val currentBackStack by navController.currentBackStackEntryAsState()
                             val currentDestination = currentBackStack?.destination
+
+                            val openNowPlaying by shouldOpenNowPlaying.collectAsState()
+
+                            LaunchedEffect(openNowPlaying) {
+                                if (openNowPlaying) {
+                                    navController.navigate(NowPlayingRoute) {
+                                        launchSingleTop = true
+                                    }
+                                    _shouldOpenNowPlaying.value = false // Reset state flag after routing
+                                }
+                            }
 
                             androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
                             androidx.compose.foundation.layout.Column(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
@@ -146,6 +167,18 @@ class MainActivity : ComponentActivity() {
             hasPermission = true
         } else {
             permissionLauncher.launch(permission)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        checkIntent(intent)
+    }
+
+    private fun checkIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra("OPEN_NOW_PLAYING", false) == true) {
+            _shouldOpenNowPlaying.value = true
         }
     }
 

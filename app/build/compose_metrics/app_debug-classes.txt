@@ -1,0 +1,110 @@
+unstable class MainActivity {
+  unstable val _shouldOpenNowPlaying: MutableStateFlow<Boolean>
+  unstable val shouldOpenNowPlaying: StateFlow<Boolean>
+  unstable var playbackController: PlaybackController
+  stable var hasPermission$delegate: MutableState<Boolean>
+  unstable val permissionLauncher: ActivityResultLauncher<@[FlexibleNullability] String?>
+  <runtime stability> = Unstable
+}
+unstable class DefaultAppContainer {
+  unstable val applicationContext: Context
+  unstable val database$delegate: Lazy<AppDatabase>
+  unstable val songRepository$delegate: Lazy<SongRepositoryImpl>
+  unstable val rankingEngine$delegate: Lazy<RankingEngine>
+  unstable val playHistoryDao$delegate: Lazy<PlayHistoryDao>
+  unstable val userPreferences$delegate: Lazy<UserPreferences>
+  <runtime stability> = Unstable
+}
+unstable class SmartShuffleApplication {
+  runtime var container: AppContainer
+  <runtime stability> = Unstable
+}
+stable class Converters {
+  <runtime stability> = Stable
+}
+stable class AppDatabase {
+  <runtime stability> = Stable
+}
+stable class MusicScanner {
+  <runtime stability> = Stable
+}
+unstable class SongRepositoryImpl {
+  runtime val songDao: SongDao
+  runtime val queueAssociationDao: QueueAssociationDao
+  unstable val context: Context
+  <runtime stability> = Unstable
+}
+unstable class UserPreferences {
+  unstable val context: Context
+  unstable val sleepTimerTargetFlow: Flow<Long?>
+  <runtime stability> = Unstable
+}
+stable class RankingEngine {
+  runtime val rankDao: RankDao
+  runtime val playHistoryDao: PlayHistoryDao
+  runtime val songDao: SongDao
+  runtime val queueDao: QueueAssociationDao
+  stable val SHUFFLE_RANK_INCREMENT: Float
+  stable val MANUAL_RANK_INCREMENT: Float
+  stable val RANK_DECAY_PERIOD_MS: Long
+  <runtime stability> = 
+}
+unstable class PlaybackController {
+  unstable val context: Context
+  runtime val rankingEngine: RankingEngine
+  unstable val userPreferences: UserPreferences
+  unstable var controllerFuture: ListenableFuture<MediaController>?
+  unstable var mediaController: MediaController?
+  unstable val scope: CoroutineScope
+  unstable var progressJob: Job?
+  unstable var currentPlaylist: List<Song>
+  unstable val sharedPrefs: @[FlexibleNullability] SharedPreferences?
+  unstable val _isShuffleEnabled: MutableStateFlow<Boolean>
+  unstable val isShuffleEnabled: StateFlow<Boolean>
+  unstable val _isPlaying: MutableStateFlow<Boolean>
+  unstable val isPlaying: StateFlow<Boolean>
+  unstable val _currentQueue: MutableStateFlow<List<Song>>
+  unstable val currentQueue: StateFlow<List<Song>>
+  unstable val _currentSong: MutableStateFlow<Song?>
+  unstable val currentSong: StateFlow<Song?>
+  unstable val _currentPosition: MutableStateFlow<Long>
+  unstable val currentPosition: StateFlow<Long>
+  unstable val _duration: MutableStateFlow<Long>
+  unstable val duration: StateFlow<Long>
+  unstable val _volume: MutableStateFlow<Float>
+  unstable val volume: StateFlow<Float>
+  unstable val _sleepTimerTargetMillis: MutableStateFlow<Long?>
+  unstable val sleepTimerTargetMillis: StateFlow<Long?>
+  stable val TARGET_UPCOMING_BUFFER: Int
+  <runtime stability> = Unstable
+}
+unstable class PlaybackService {
+  unstable var mediaSession: MediaSession?
+  <runtime stability> = Unstable
+}
+unstable class SystemVolumeManager {
+  unstable val context: Context
+  unstable val audioManager: AudioManager
+  <runtime stability> = Unstable
+}
+unstable class LibraryViewModel {
+  runtime val songRepository: SongRepository
+  runtime val playHistoryDao: PlayHistoryDao
+  unstable val playbackController: PlaybackController
+  unstable val volumeManager: SystemVolumeManager
+  unstable val baseSongs: Flow<List<Song>>
+  unstable val songs: StateFlow<List<Song>>
+  unstable val currentSong: StateFlow<Song?>
+  unstable val isPlaying: StateFlow<Boolean>
+  unstable val currentPosition: StateFlow<Long>
+  unstable val duration: StateFlow<Long>
+  unstable val volume: StateFlow<Float>
+  unstable val systemVolume: StateFlow<Float>
+  unstable val isShuffleEnabled: StateFlow<Boolean>
+  unstable val currentQueue: StateFlow<List<Song>>
+  unstable val sleepTimerTargetMillis: StateFlow<Long?>
+  unstable val folders: StateFlow<List<FolderSummary>>
+  unstable val _selectedFolderPath: MutableStateFlow<String?>
+  unstable val selectedFolderSongs: StateFlow<List<Song>>
+  <runtime stability> = Unstable
+}

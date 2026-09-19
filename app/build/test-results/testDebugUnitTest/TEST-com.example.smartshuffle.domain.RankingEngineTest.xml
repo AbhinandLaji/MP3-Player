@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.smartshuffle.domain.RankingEngineTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2026-09-19T08:48:45" hostname="ABHINAND" time="0.081">
+  <properties/>
+  <testcase name="incrementRank records PlayHistory entry" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.002"/>
+  <testcase name="incrementRank with MANUAL uses MANUAL_RANK_INCREMENT" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.001"/>
+  <testcase name="excludeSongId is never selected" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.009"/>
+  <testcase name="song ranked at t=0 returns effective rank 0 at t = 3 days" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.0"/>
+  <testcase name="song ranked at t=0 returns full rankValue when queried at t=0" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.021"/>
+  <testcase name="song ranked at t=0 returns effective rank 0 when well past decay period" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.001"/>
+  <testcase name="selectNextShuffleSong returns null when no valid candidates" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.001"/>
+  <testcase name="weighted selection favors rank-0 song over high-rank songs" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.008"/>
+  <testcase name="weighted selection picks every song at least occasionally with equal ranks" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.003"/>
+  <testcase name="song with no SongRank entry returns effective rank 0" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.001"/>
+  <testcase name="SHUFFLE increment is exactly double MANUAL increment" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.0"/>
+  <testcase name="incrementRank with SHUFFLE uses SHUFFLE_RANK_INCREMENT" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.002"/>
+  <testcase name="song ranked at t=0 returns half rankValue at t = 1_5 days" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.0"/>
+  <testcase name="selectNextShuffleSong respects playlistContext scope" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.002"/>
+  <testcase name="large rank disparity still allows occasional selection of high-rank songs" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.022"/>
+  <testcase name="selectNextShuffleSong returns null when library is empty" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.003"/>
+  <testcase name="re-play before full decay stacks correctly on decaying value" classname="com.example.smartshuffle.domain.RankingEngineTest" time="0.003"/>
+  <system-out><![CDATA[TEST STATS: Low rank picks: 4891, High rank picks: 109
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

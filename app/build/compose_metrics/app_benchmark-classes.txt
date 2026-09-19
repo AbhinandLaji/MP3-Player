@@ -1,0 +1,13 @@
+unstable class DefaultAppContainer {
+  unstable val applicationContext: Context
+  unstable val database$delegate: Lazy<AppDatabase>
+  unstable val songRepository$delegate: Lazy<SongRepositoryImpl>
+  unstable val rankingEngine$delegate: Lazy<RankingEngine>
+  unstable val playHistoryDao$delegate: Lazy<PlayHistoryDao>
+  unstable val userPreferences$delegate: Lazy<UserPreferences>
+  <runtime stability> = Unstable
+}
+unstable class SmartShuffleApplication {
+  runtime var container: AppContainer
+  <runtime stability> = Unstable
+}

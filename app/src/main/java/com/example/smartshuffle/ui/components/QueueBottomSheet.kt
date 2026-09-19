@@ -1,25 +1,28 @@
 package com.example.smartshuffle.ui.components
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.smartshuffle.data.Song
 import com.example.smartshuffle.ui.screens.LibraryViewModel
 import com.example.smartshuffle.ui.theme.*
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +31,6 @@ fun QueueBottomSheet(
     onDismiss: () -> Unit
 ) {
     val queue by viewModel.currentQueue.collectAsState()
-    val currentSong by viewModel.currentSong.collectAsState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -41,13 +43,6 @@ fun QueueBottomSheet(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            Text(
-                text = "CURRENT QUEUE",
-                style = MaterialTheme.typography.titleMedium,
-                color = TextPrimary,
-                modifier = Modifier.padding(16.dp)
-            )
-
             if (queue.isEmpty()) {
                 Text(
                     text = "Queue is empty",
@@ -55,17 +50,77 @@ fun QueueBottomSheet(
                     modifier = Modifier.padding(16.dp)
                 )
             } else {
-                LazyColumn {
-                    itemsIndexed(queue, key = { index, song -> "${song.id}_$index" }) { index, song ->
-                        val isPlaying = song.id == currentSong?.id
-                        QueueItemRow(
-                            index = index,
-                            song = song,
-                            isPlaying = isPlaying,
-                            onMoveUp = if (index > 0) { { viewModel.moveQueueItem(index, index - 1) } } else null,
-                            onMoveDown = if (index < queue.size - 1) { { viewModel.moveQueueItem(index, index + 1) } } else null,
-                            onDelete = { viewModel.removeFromQueue(index) }
-                        )
+                // Section 1: NOW PLAYING (Pinned)
+                Text(
+                    text = "NOW PLAYING",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = NeonRed,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                
+                NowPlayingCard(song = queue[0])
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Section 2: NEXT IN QUEUE
+                val originalUpNext = queue.drop(1)
+                
+                if (originalUpNext.isNotEmpty()) {
+                    Text(
+                        text = "NEXT IN QUEUE",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = TextSecondary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+
+                    val lazyListState = rememberLazyListState()
+                    
+                    // Maintain a local mutable copy of the list so the UI can update instantly during drag
+                    // but don't overwrite it with new StateFlow emissions while a drag is actively happening.
+                    var upNext by remember { mutableStateOf(originalUpNext) }
+                    
+                    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                        upNext = upNext.toMutableList().apply {
+                            add(to.index, removeAt(from.index))
+                        }
+                        
+                        viewModel.moveQueueItem(from.index, to.index)
+                    }
+
+                    // Sync local list with ExoPlayer list when not dragging
+                    LaunchedEffect(originalUpNext, reorderableState.isAnyItemDragging) {
+                        if (!reorderableState.isAnyItemDragging) {
+                            upNext = originalUpNext
+                        }
+                    }
+
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.weight(1f, fill = false)
+                    ) {
+                        itemsIndexed(upNext, key = { _, song -> song.id }) { index, song ->
+                            ReorderableItem(
+                                state = reorderableState,
+                                key = song.id
+                            ) { isDragging ->
+                                // The item itself is wrapped in SwipeToDismiss
+                                val absoluteDisplayIndex = index + 1
+                                val elevation = if (isDragging) 8.dp else 0.dp
+                                
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .shadow(elevation)
+                                ) {
+                                    SwipeToDismissQueueItem(
+                                        song = song,
+                                        displayIndex = index + 1,
+                                        onDelete = { viewModel.removeFromQueue(index) },
+                                        dragHandleModifier = Modifier.draggableHandle()
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -74,23 +129,119 @@ fun QueueBottomSheet(
 }
 
 @Composable
-fun QueueItemRow(
-    index: Int,
-    song: Song,
-    isPlaying: Boolean,
-    onMoveUp: (() -> Unit)?,
-    onMoveDown: (() -> Unit)?,
-    onDelete: () -> Unit
-) {
-    val titleColor = if (isPlaying) NeonRed else NeonBlue
-    val containerColor = if (isPlaying) NeonSurfaceHi else NeonSurface
+fun NowPlayingCard(song: Song) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val borderAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1.0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "borderPulse"
+    )
 
     Surface(
-        color = containerColor,
+        color = NeonSurfaceHi,
+        shape = CutCornerShape6,
+        border = androidx.compose.foundation.BorderStroke(1.dp, NeonRed.copy(alpha = borderAlpha)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .shadow(4.dp, spotColor = NeonRed, ambientColor = NeonRed)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(NeonRed, shape = androidx.compose.foundation.shape.CircleShape)
+                    .shadow(4.dp, spotColor = NeonRed, ambientColor = NeonRed)
+            )
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = song.title,
+                    color = NeonRed,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = song.artist,
+                    color = TextSecondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeToDismissQueueItem(
+    song: Song,
+    displayIndex: Int,
+    onDelete: () -> Unit,
+    dragHandleModifier: Modifier
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            if (it == SwipeToDismissBoxValue.EndToStart || it == SwipeToDismissBoxValue.StartToEnd) {
+                onDelete()
+                true
+            } else {
+                false
+            }
+        }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            val color = if (dismissState.dismissDirection != SwipeToDismissBoxValue.Settled) {
+                NeonRed.copy(alpha = 0.5f)
+            } else Color.Transparent
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(color)
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+            }
+        },
+        content = {
+            QueueItemRowDraggable(
+                index = displayIndex,
+                song = song,
+                dragHandleModifier = dragHandleModifier
+            )
+        }
+    )
+}
+
+@Composable
+fun QueueItemRowDraggable(
+    index: Int,
+    song: Song,
+    dragHandleModifier: Modifier
+) {
+    Surface(
+        color = NeonSurface,
         shape = CutCornerShape6,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -98,21 +249,30 @@ fun QueueItemRow(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "${index + 1}.",
-                color = TextSecondary,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.width(32.dp)
-            )
+            Surface(
+                color = NeonSurfaceHi,
+                shape = CutCornerShape6,
+                modifier = Modifier.size(28.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "$index",
+                        color = NeonBlue,
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, fontFamily = ChakraPetch)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.width(12.dp))
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.title,
-                    color = titleColor,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = if (isPlaying) FontWeight.Bold else FontWeight.Normal),
+                    color = NeonBlue,
+                    style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = if (isPlaying) Modifier.shadow(2.dp, spotColor = NeonRed, ambientColor = NeonRed) else Modifier
+                    fontFamily = ChakraPetch
                 )
                 Text(
                     text = song.artist,
@@ -123,17 +283,14 @@ fun QueueItemRow(
                 )
             }
 
-            Row {
-                IconButton(onClick = { onMoveUp?.invoke() }, enabled = onMoveUp != null) {
-                    Icon(Icons.Default.ArrowUpward, contentDescription = "Move Up", tint = if (onMoveUp != null) TextPrimary else TextSecondary.copy(alpha=0.3f))
-                }
-                IconButton(onClick = { onMoveDown?.invoke() }, enabled = onMoveDown != null) {
-                    Icon(Icons.Default.ArrowDownward, contentDescription = "Move Down", tint = if (onMoveDown != null) TextPrimary else TextSecondary.copy(alpha=0.3f))
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Remove", tint = NeonRed)
-                }
-            }
+            // Drag handle with the provided modifier
+            Icon(
+                imageVector = Icons.Default.DragHandle, 
+                contentDescription = "Reorder", 
+                tint = NeonBlue.copy(alpha = 0.6f),
+                modifier = dragHandleModifier
+                    .padding(8.dp)
+            )
         }
     }
 }

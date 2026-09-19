@@ -52,6 +52,8 @@ class SongRepositoryImpl(
     }
 
     override suspend fun syncLibrary() {
+        val startTime = System.currentTimeMillis()
+        android.util.Log.d("PERF_AUDIT", "syncLibrary started on thread: ${Thread.currentThread().name}")
         val scannedSongs = MusicScanner.queryMediaStore(context)
         
         for (song in scannedSongs) {
@@ -70,6 +72,8 @@ class SongRepositoryImpl(
                 songDao.update(updatedSong)
             }
         }
+        val duration = System.currentTimeMillis() - startTime
+        android.util.Log.d("PERF_AUDIT", "syncLibrary completed in ${duration}ms, processed ${scannedSongs.size} songs")
     }
 
     override suspend fun recordQueueAssociation(currentSongId: Long, queuedSongId: Long) {

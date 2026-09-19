@@ -1,0 +1,11 @@
+com.example.smartshuffle.test.app-androidTest-0 C:\MusicPLayer\app\build\generated\res\resValues\androidTest\debug
+com.example.smartshuffle.test.app-mergeDebugAndroidTestResources-1 C:\MusicPLayer\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.example.smartshuffle.test.app-mergeDebugAndroidTestResources-2 C:\MusicPLayer\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.example.smartshuffle.test.app-debugAndroidTest-3 C:\MusicPLayer\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
+com.example.smartshuffle.test.app-room-runtime-2.6.1-4 C:\Users\abhin\.gradle\caches\transforms-4\0692e87df3314484d7771bc567717738\transformed\room-runtime-2.6.1\res
+com.example.smartshuffle.test.app-jetified-core-1.5.0-5 C:\Users\abhin\.gradle\caches\transforms-4\1bfd4e2c01641a07a52cb38b5959ced3\transformed\jetified-core-1.5.0\res
+com.example.smartshuffle.test.app-sqlite-2.4.0-6 C:\Users\abhin\.gradle\caches\transforms-4\7e412c0f1dee06900cc18dd0403a4dc0\transformed\sqlite-2.4.0\res
+com.example.smartshuffle.test.app-core-runtime-2.2.0-7 C:\Users\abhin\.gradle\caches\transforms-4\dd067e7cc0d79cdc0abc969fcded9f46\transformed\core-runtime-2.2.0\res
+com.example.smartshuffle.test.app-room-testing-2.6.1-8 C:\Users\abhin\.gradle\caches\transforms-4\e3332d27500e2f8407d9660f9f4939d6\transformed\room-testing-2.6.1\res
+com.example.smartshuffle.test.app-sqlite-framework-2.4.0-9 C:\Users\abhin\.gradle\caches\transforms-4\eda413bfed18faf437d5f3b598e2b192\transformed\sqlite-framework-2.4.0\res
+com.example.smartshuffle.test.app-jetified-annotation-experimental-1.4.1-10 C:\Users\abhin\.gradle\caches\transforms-4\fda486a10fe9391c979022438e24ecdb\transformed\jetified-annotation-experimental-1.4.1\res

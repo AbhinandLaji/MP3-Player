@@ -40,6 +40,25 @@
                         "endColumns": "12,12,12,12",
                         "endOffsets": "773,936,1230,1525"
                     }
+                },
+                {
+                    "source": "C:\\Users\\abhin\\.gradle\\caches\\transforms-4\\ce5e2ce438a819a008e50754033a933a\\transformed\\jetified-leakcanary-android-core-2.14\\res\\values-v21\\values-v21.xml",
+                    "from": {
+                        "startLines": "2,6",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,313",
+                        "endLines": "5,9",
+                        "endColumns": "10,10",
+                        "endOffsets": "308,535"
+                    },
+                    "to": {
+                        "startLines": "30,34",
+                        "startColumns": "4,4",
+                        "startOffsets": "2054,2312",
+                        "endLines": "33,37",
+                        "endColumns": "10,10",
+                        "endOffsets": "2307,2534"
+                    }
                 }
             ]
         }

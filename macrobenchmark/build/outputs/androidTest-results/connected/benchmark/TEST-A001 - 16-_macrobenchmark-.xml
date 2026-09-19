@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.example.smartshuffle.benchmark.StartupBenchmark" tests="1" failures="1" errors="0" skipped="0" time="28.145" timestamp="2026-09-19T09:55:40" hostname="localhost">
+  <properties>
+    <property name="device" value="A001 - 16" />
+    <property name="flavor" value="" />
+    <property name="project" value=":macrobenchmark" />
+  </properties>
+  <testcase name="startup" classname="com.example.smartshuffle.benchmark.StartupBenchmark" time="26.297">
+    <failure>java.lang.IllegalStateException: Unable to confirm activity launch completion [] Please report a bug with the output of `adb shell dumpsys gfxinfo com.example.smartshuffle framestats`
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityImpl(MacrobenchmarkScope.kt:217)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:138)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:118)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait$default(MacrobenchmarkScope.kt:110)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:26)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:18)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:286)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record(PerfettoCaptureWrapper.kt:142)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record$default(PerfettoCaptureWrapper.kt:101)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:241)
+at androidx.benchmark.perfetto.PerfettoTraceProcessor$Companion.runServer(PerfettoTraceProcessor.kt:105)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:241)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:422)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:107)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:97)
+at com.example.smartshuffle.benchmark.StartupBenchmark.startup(StartupBenchmark.kt:18)
+</failure>
+  </testcase>
+</testsuite>

@@ -1,0 +1,20 @@
+unstable class PlayHistoryDaoTest {
+  runtime var database: AppDatabase
+  unstable var playHistoryDao: PlayHistoryDao
+  <runtime stability> = Unstable
+}
+unstable class QueueAssociationDaoTest {
+  runtime var database: AppDatabase
+  unstable var queueDao: QueueAssociationDao
+  <runtime stability> = Unstable
+}
+unstable class RankDaoTest {
+  runtime var database: AppDatabase
+  unstable var rankDao: RankDao
+  <runtime stability> = Unstable
+}
+unstable class SongDaoTest {
+  runtime var database: AppDatabase
+  unstable var songDao: SongDao
+  <runtime stability> = Unstable
+}

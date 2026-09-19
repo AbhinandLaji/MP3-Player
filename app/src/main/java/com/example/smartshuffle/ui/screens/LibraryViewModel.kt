@@ -27,11 +27,15 @@ class LibraryViewModel(
     private val baseSongs = songRepository.getAllSongs()
 
     val songs: StateFlow<List<Song>> = kotlinx.coroutines.flow.combine(baseSongs, playHistoryDao.getPlayCounts()) { allSongs, playCounts ->
+        val startTime = System.currentTimeMillis()
         val playCountMap = playCounts.associateBy({ it.songId }, { it.playCount })
-        allSongs.sortedByDescending { playCountMap[it.id] ?: 0 }
+        val result = allSongs.sortedByDescending { playCountMap[it.id] ?: 0 }
+        val duration = System.currentTimeMillis() - startTime
+        android.util.Log.d("PERF_AUDIT", "LibraryViewModel combined getAllSongs + getPlayCounts in ${duration}ms for ${allSongs.size} songs")
+        result
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Lazily,
         initialValue = emptyList()
     )
 
@@ -43,7 +47,7 @@ class LibraryViewModel(
     val systemVolume: StateFlow<Float> = volumeManager.observeVolume()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Lazily,
             initialValue = if (volumeManager.maxVolume > 0) volumeManager.currentVolume.toFloat() / volumeManager.maxVolume else 0f
         )
     val isShuffleEnabled: StateFlow<Boolean> = playbackController.isShuffleEnabled
@@ -62,7 +66,7 @@ class LibraryViewModel(
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Lazily,
         initialValue = emptyList()
     )
 
@@ -70,7 +74,7 @@ class LibraryViewModel(
     val selectedFolderSongs: StateFlow<List<Song>> = kotlinx.coroutines.flow.combine(baseSongs, _selectedFolderPath) { allSongs: List<Song>, path: String? ->
         if (path == null) emptyList()
         else allSongs.filter { java.io.File(it.filePath).parentFile?.absolutePath == path }.sortedBy { it.title }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun setSelectedFolder(path: String) {
         _selectedFolderPath.value = path
@@ -117,7 +121,7 @@ class LibraryViewModel(
     }
 
     fun removeFromQueue(index: Int) {
-        playbackController.removeFromQueue(index)
+        playbackController.removeQueueItem(index)
     }
 
     fun togglePlayPause() {

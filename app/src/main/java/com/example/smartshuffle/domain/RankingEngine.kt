@@ -15,9 +15,9 @@ class RankingEngine(
     private val songDao: SongDao,
     private val queueDao: com.example.smartshuffle.data.QueueAssociationDao
 ) {
-    private val SHUFFLE_RANK_INCREMENT = 10f
-    private val MANUAL_RANK_INCREMENT = SHUFFLE_RANK_INCREMENT / 2f
-    private val RANK_DECAY_PERIOD_MS = 3 * 24 * 60 * 60 * 1000L // 3 days
+    internal val SHUFFLE_RANK_INCREMENT = 10f
+    internal val MANUAL_RANK_INCREMENT = SHUFFLE_RANK_INCREMENT / 2f
+    internal val RANK_DECAY_PERIOD_MS = 3 * 24 * 60 * 60 * 1000L // 3 days
 
     suspend fun incrementRank(songId: Long, playType: PlayType) {
         val increment = if (playType == PlayType.SHUFFLE) SHUFFLE_RANK_INCREMENT else MANUAL_RANK_INCREMENT
@@ -33,12 +33,12 @@ class RankingEngine(
         playHistoryDao.insert(PlayHistory(songId = songId, timestamp = System.currentTimeMillis(), playType = playType))
     }
 
-    private suspend fun getEffectiveRank(songId: Long): Float {
+    internal suspend fun getEffectiveRank(songId: Long): Float {
         val rank = rankDao.getRank(songId) ?: return 0f
         return getEffectiveRank(rank)
     }
 
-    private fun getEffectiveRank(rank: SongRank): Float {
+    internal fun getEffectiveRank(rank: SongRank): Float {
         val elapsed = System.currentTimeMillis() - rank.lastUpdated
         if (elapsed >= RANK_DECAY_PERIOD_MS) return 0f
         
@@ -55,6 +55,8 @@ class RankingEngine(
         currentSongId: Long,
         playlistContext: List<Song>? = null // New parameter!
     ): Song? {
+        val startTime = System.currentTimeMillis()
+        
         // 1. Establish the scoped candidate pool
         val candidatePool = if (!playlistContext.isNullOrEmpty()) {
             playlistContext
@@ -65,17 +67,18 @@ class RankingEngine(
         // 2. Filter out the currently playing song
         val validCandidates = candidatePool.filter { it.id != currentSongId }
 
-        if (validCandidates.isEmpty()) return null
+        if (validCandidates.isEmpty()) {
+            val duration = System.currentTimeMillis() - startTime
+            android.util.Log.d("PERF_AUDIT", "selectNextShuffleSong (empty candidates) executed in ${duration}ms")
+            return null
+        }
 
         // 3. Fetch associations (Phase 4 logic)
         val associations = queueDao.getAssociationsForSong(currentSongId)
             .associateBy({ it.songIdB }, { it.count })
 
-        var bestSong: Song? = null
-        var highestWeight = -1.0
-
-        // 4. Loop through the *scoped* validCandidates instead of allSongs
-        for (song in validCandidates) {
+        // 4. Calculate weights for all valid candidates
+        val candidateWeights = validCandidates.map { song ->
             var weight = calculateBaseWeight(song) 
 
             val associationScore = associations[song.id]
@@ -83,14 +86,26 @@ class RankingEngine(
                 val multiplier = 1.0 + (associationScore * 0.15) 
                 weight *= multiplier
             }
+            Pair(song, weight)
+        }
 
-            weight *= (0.8 + Math.random() * 0.4) 
+        // 5. True weighted random sampling (roulette-wheel selection)
+        val totalWeight = candidateWeights.sumOf { it.second }
+        if (totalWeight <= 0.0) return validCandidates.randomOrNull()
 
-            if (weight > highestWeight) {
-                highestWeight = weight
-                bestSong = song
+        var randomValue = Random.nextDouble(totalWeight)
+        for ((song, weight) in candidateWeights) {
+            randomValue -= weight
+            if (randomValue <= 0.0) {
+                val duration = System.currentTimeMillis() - startTime
+                android.util.Log.d("PERF_AUDIT", "selectNextShuffleSong executed in ${duration}ms for ${candidateWeights.size} candidates")
+                return song
             }
         }
-        return bestSong
+        
+        // Fallback in case of floating point inaccuracies
+        val duration = System.currentTimeMillis() - startTime
+        android.util.Log.d("PERF_AUDIT", "selectNextShuffleSong (fallback) executed in ${duration}ms for ${candidateWeights.size} candidates")
+        return candidateWeights.lastOrNull()?.first
     }
 }

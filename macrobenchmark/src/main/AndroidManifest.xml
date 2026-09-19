@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.smartshuffle.benchmark">
+    <!-- Macrobenchmark requires query permissions to start the target app -->
+    <queries>
+        <package android:name="com.example.smartshuffle" />
+    </queries>
+</manifest>

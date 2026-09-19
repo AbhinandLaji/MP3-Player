@@ -103,35 +103,10 @@ class MainActivity : ComponentActivity() {
 
                             androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
                             androidx.compose.foundation.layout.Column(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
-                                // In type-safe navigation, we check the fully qualified route name or use a helper
-                                val isLibrary = currentDestination?.route?.contains("LibraryRoute") == true
-                                val isFolders = currentDestination?.route?.contains("FoldersRoute") == true
-                                
-                                if (isLibrary || isFolders) {
-                                    androidx.compose.material3.TabRow(
-                                        selectedTabIndex = if (isFolders) 1 else 0,
-                                        modifier = androidx.compose.ui.Modifier.statusBarsPadding()
-                                    ) {
-                                        androidx.compose.material3.Tab(
-                                            selected = isLibrary,
-                                            onClick = { navController.navigate(LibraryRoute) { popUpTo(navController.graph.startDestinationId) { saveState = true }; launchSingleTop = true; restoreState = true } },
-                                            text = { androidx.compose.material3.Text("Songs") }
-                                        )
-                                        androidx.compose.material3.Tab(
-                                            selected = isFolders,
-                                            onClick = { navController.navigate(FoldersRoute) { popUpTo(navController.graph.startDestinationId) { saveState = true }; launchSingleTop = true; restoreState = true } },
-                                            text = { androidx.compose.material3.Text("Folders") }
-                                        )
-                                    }
-                                }
-                                
                                 androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.weight(1f)) {
-                                    NavHost(navController = navController, startDestination = LibraryRoute) {
-                                        composable<LibraryRoute> {
-                                            LibraryScreen(viewModel = viewModel, navController = navController)
-                                        }
-                                        composable<FoldersRoute> {
-                                            com.example.smartshuffle.ui.screens.FoldersScreen(viewModel = viewModel, navController = navController)
+                                    NavHost(navController = navController, startDestination = com.example.smartshuffle.ui.navigation.HomeRoute) {
+                                        composable<com.example.smartshuffle.ui.navigation.HomeRoute> {
+                                            com.example.smartshuffle.ui.screens.HomeScreen(viewModel = viewModel, navController = navController)
                                         }
                                         composable<FolderDetailRoute> {
                                             com.example.smartshuffle.ui.screens.FolderDetailScreen(viewModel = viewModel, navController = navController)
@@ -199,3 +174,4 @@ fun PermissionDeniedScreen(onRequestPermission: () -> Unit) {
         }
     }
 }
+

@@ -1,0 +1,3 @@
+com.example.smartshuffle.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme

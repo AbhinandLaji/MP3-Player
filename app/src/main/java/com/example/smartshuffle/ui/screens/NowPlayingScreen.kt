@@ -23,6 +23,7 @@ import com.example.smartshuffle.ui.theme.CutCornerShape6
 import android.media.MediaMetadataRetriever
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -139,12 +140,12 @@ fun NowPlayingScreenContent(
 ) {
     val albumArt = rememberAlbumArt(uri = android.net.Uri.parse(song.filePath))
 
-    // --- THE SEEK BAR BUG FIX ---
-    var dragProgress by remember { mutableFloatStateOf(0f) }
-    var isDragging by remember { mutableStateOf(false) }
-
-    // Use the drag state if the user is holding the slider, otherwise use ExoPlayer's state
-    val displayProgress = if (isDragging) dragProgress else (currentPositionMs.toFloat() / totalDurationMs.coerceAtLeast(1).toFloat())
+    val neonGlowPaint = remember {
+        Paint().apply {
+            color = androidx.compose.ui.graphics.Color(0xFFFF2A4D).copy(alpha = 0.6f) // NeonRed
+            asFrameworkPaint().maskFilter = BlurMaskFilter(64f, BlurMaskFilter.Blur.NORMAL)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -155,7 +156,7 @@ fun NowPlayingScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(end = 64.dp) // Leave room for the volume bar on the right!
+                .padding(end = 48.dp) // Leave room for the volume bar on the right!
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -175,14 +176,7 @@ fun NowPlayingScreenContent(
                     .aspectRatio(1f)
                     // 2. Add the red neon backlight glow
                     .drawBehind {
-                        val shadowRadius = 64f // Controls how far the gradient glow spreads
-                        
                         drawIntoCanvas { canvas ->
-                            val paint = Paint().apply {
-                                color = androidx.compose.ui.graphics.Color(0xFFFF2A4D).copy(alpha = 0.6f) // NeonRed
-                                asFrameworkPaint().maskFilter = BlurMaskFilter(shadowRadius, BlurMaskFilter.Blur.NORMAL)
-                            }
-                            
                             canvas.drawRoundRect(
                                 left = 0f,
                                 top = 0f,
@@ -190,7 +184,7 @@ fun NowPlayingScreenContent(
                                 bottom = size.height,
                                 radiusX = 16f, // Match your surface corner radius
                                 radiusY = 16f,
-                                paint = paint
+                                paint = neonGlowPaint
                             )
                         }
                     }
@@ -276,50 +270,12 @@ fun NowPlayingScreenContent(
                 }
             }
 
-            // FIXED SEEK BAR
-            val activeSeekColor = if (isDragging) NeonRed else NeonBlue
-            Slider(
-                value = displayProgress.coerceIn(0f, 1f),
-                onValueChange = {
-                    isDragging = true
-                    dragProgress = it
-                },
-                onValueChangeFinished = {
-                    isDragging = false
-                    onSeek((dragProgress * totalDurationMs).toLong())
-                },
-                colors = SliderDefaults.colors(
-                    thumbColor = activeSeekColor,
-                    activeTrackColor = activeSeekColor,
-                    inactiveTrackColor = NeonSurfaceHi
-                ),
+            PlaybackSeekBar(
+                currentPosition = currentPositionMs,
+                duration = totalDurationMs,
+                onSeekFinished = onSeek,
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val displayPositionMs = if (isDragging) {
-                    (dragProgress * totalDurationMs).toLong()
-                } else {
-                    currentPositionMs
-                }
-                Text(
-                    text = formatTime(displayPositionMs),
-                    fontFamily = ChakraPetch,
-                    fontSize = 12.sp,
-                    color = if (isDragging) NeonRed else TextSecondary
-                )
-                Text(
-                    text = formatTime(totalDurationMs),
-                    fontFamily = ChakraPetch,
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -346,55 +302,156 @@ fun NowPlayingScreenContent(
             Spacer(modifier = Modifier.weight(1.2f))
         }
 
-        // --- RIGHT-SIDE VERTICAL VOLUME BAR ---
-        Column(
+        VerticalVolumeSlider(
+            systemVolume = currentVolume,
+            onVolumeChanged = onVolumeChange,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .fillMaxHeight(0.6f) // Takes up 60% of screen height
-                .padding(end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(end = 12.dp)
+                .fillMaxHeight(0.30f)
+        )
+    }
+}
+
+@Composable
+private fun PlaybackSeekBar(
+    currentPosition: Long,
+    duration: Long,
+    onSeekFinished: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isDragging by remember { mutableStateOf(false) }
+    var dragProgress by remember { mutableFloatStateOf(0f) }
+
+    val progress = if (isDragging) {
+        dragProgress
+    } else if (duration > 0) {
+        (currentPosition.toFloat() / duration).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+
+    val activeSeekColor = if (isDragging) NeonRed else NeonBlue
+
+    Column(modifier = modifier) {
+        Slider(
+            value = progress,
+            onValueChange = {
+                isDragging = true
+                dragProgress = it
+            },
+            onValueChangeFinished = {
+                onSeekFinished((dragProgress * duration).toLong())
+                isDragging = false
+            },
+            colors = SliderDefaults.colors(
+                thumbColor = activeSeekColor,
+                activeTrackColor = activeSeekColor,
+                inactiveTrackColor = NeonSurfaceHi
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = Icons.Default.VolumeUp,
-                contentDescription = "Max Volume",
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            var isVolumeDragging by remember { mutableStateOf(false) }
-            var dragVolumeProgress by remember { mutableFloatStateOf(0f) }
-            val activeVolumeColor = if (isVolumeDragging) NeonRed else NeonBlue
-
-            // Rotate a standard horizontal slider 90 degrees to make it vertical
-            Box(modifier = Modifier.weight(1f).width(48.dp), contentAlignment = Alignment.Center) {
-                Slider(
-                    value = if (isVolumeDragging) dragVolumeProgress else currentVolume,
-                    onValueChange = {
-                        isVolumeDragging = true
-                        dragVolumeProgress = it
-                    },
-                    onValueChangeFinished = {
-                        isVolumeDragging = false
-                        onVolumeChange(dragVolumeProgress)
-                    },
-                    modifier = Modifier
-                        .graphicsLayer {
-                            rotationZ = -90f
-                            transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.5f)
-                        }
-                        .requiredWidth(250.dp), // Height of the vertical bar
-                    colors = SliderDefaults.colors(
-                        thumbColor = activeVolumeColor,
-                        activeTrackColor = activeVolumeColor.copy(alpha = 0.5f)
-                    )
-                )
+            val displayPositionMs = if (isDragging) {
+                (dragProgress * duration).toLong()
+            } else {
+                currentPosition
             }
-
-            Icon(
-                imageVector = Icons.Default.VolumeMute,
-                contentDescription = "Mute",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            Text(
+                text = formatTime(displayPositionMs),
+                fontFamily = ChakraPetch,
+                fontSize = 12.sp,
+                color = if (isDragging) NeonRed else TextSecondary
+            )
+            Text(
+                text = formatTime(duration),
+                fontFamily = ChakraPetch,
+                fontSize = 12.sp,
+                color = TextSecondary
             )
         }
+    }
+}
+
+@Composable
+private fun VerticalVolumeSlider(
+    systemVolume: Float,
+    onVolumeChanged: (Float) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isDragging by remember { mutableStateOf(false) }
+    var localVolume by remember { mutableFloatStateOf(0f) }
+
+    val volume = if (isDragging) localVolume else systemVolume
+    val activeVolumeColor = if (isDragging) NeonRed else NeonBlue
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically)
+    ) {
+        Icon(
+            imageVector = Icons.Default.VolumeUp,
+            contentDescription = "Max Volume",
+            tint = NeonBlue.copy(alpha = 0.7f),
+            modifier = Modifier.size(18.dp)
+        )
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .width(36.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Slider(
+                value = volume,
+                onValueChange = {
+                    isDragging = true
+                    localVolume = it
+                },
+                onValueChangeFinished = {
+                    onVolumeChanged(localVolume)
+                    isDragging = false
+                },
+                modifier = Modifier
+                    .graphicsLayer {
+                        rotationZ = 270f
+                        transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.5f)
+                    }
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(
+                            constraints.copy(
+                                minWidth = constraints.minHeight,
+                                maxWidth = constraints.maxHeight,
+                                minHeight = constraints.minWidth,
+                                maxHeight = constraints.maxWidth
+                            )
+                        )
+                        layout(placeable.height, placeable.width) {
+                            placeable.place(
+                                -(placeable.width - placeable.height) / 2,
+                                -(placeable.height - placeable.width) / 2
+                            )
+                        }
+                    },
+                colors = SliderDefaults.colors(
+                    thumbColor = activeVolumeColor,
+                    activeTrackColor = activeVolumeColor,
+                    inactiveTrackColor = NeonBlue.copy(alpha = 0.25f)
+                )
+            )
+        }
+
+        Icon(
+            imageVector = Icons.Default.VolumeMute,
+            contentDescription = "Min Volume",
+            tint = NeonBlue.copy(alpha = 0.7f),
+            modifier = Modifier.size(18.dp)
+        )
     }
 }

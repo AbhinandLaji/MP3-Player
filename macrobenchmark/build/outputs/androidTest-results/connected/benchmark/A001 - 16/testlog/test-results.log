@@ -1,0 +1,89 @@
+INSTRUMENTATION_STATUS: class=com.example.smartshuffle.benchmark.StartupBenchmark
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.example.smartshuffle.benchmark.StartupBenchmark:
+INSTRUMENTATION_STATUS: test=startup
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: additionalTestOutputFile_StartupBenchmark_startup_iter000_2026-09-19-09-55-37.perfetto-trace=/sdcard/Android/media/com.example.smartshuffle.benchmark/additional_test_output/StartupBenchmark_startup_iter000_2026-09-19-09-55-37.perfetto-trace
+INSTRUMENTATION_STATUS_CODE: 2
+INSTRUMENTATION_STATUS: class=com.example.smartshuffle.benchmark.StartupBenchmark
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalStateException: Unable to confirm activity launch completion [] Please report a bug with the output of `adb shell dumpsys gfxinfo com.example.smartshuffle framestats`
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityImpl(MacrobenchmarkScope.kt:217)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:138)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:118)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait$default(MacrobenchmarkScope.kt:110)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:26)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:18)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:286)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record(PerfettoCaptureWrapper.kt:142)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record$default(PerfettoCaptureWrapper.kt:101)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:241)
+at androidx.benchmark.perfetto.PerfettoTraceProcessor$Companion.runServer(PerfettoTraceProcessor.kt:105)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:241)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:422)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:107)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:97)
+at com.example.smartshuffle.benchmark.StartupBenchmark.startup(StartupBenchmark.kt:18)
+
+INSTRUMENTATION_STATUS: stream=
+Error in startup(com.example.smartshuffle.benchmark.StartupBenchmark):
+java.lang.IllegalStateException: Unable to confirm activity launch completion [] Please report a bug with the output of `adb shell dumpsys gfxinfo com.example.smartshuffle framestats`
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityImpl(MacrobenchmarkScope.kt:217)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:138)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:118)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait$default(MacrobenchmarkScope.kt:110)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:26)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:18)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:286)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record(PerfettoCaptureWrapper.kt:142)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record$default(PerfettoCaptureWrapper.kt:101)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:241)
+at androidx.benchmark.perfetto.PerfettoTraceProcessor$Companion.runServer(PerfettoTraceProcessor.kt:105)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:241)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:422)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:107)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:97)
+at com.example.smartshuffle.benchmark.StartupBenchmark.startup(StartupBenchmark.kt:18)
+
+INSTRUMENTATION_STATUS: test=startup
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 24.572
+There was 1 failure:
+1) startup(com.example.smartshuffle.benchmark.StartupBenchmark)
+java.lang.IllegalStateException: Unable to confirm activity launch completion [] Please report a bug with the output of `adb shell dumpsys gfxinfo com.example.smartshuffle framestats`
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityImpl(MacrobenchmarkScope.kt:217)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:138)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait(MacrobenchmarkScope.kt:118)
+at androidx.benchmark.macro.MacrobenchmarkScope.startActivityAndWait$default(MacrobenchmarkScope.kt:110)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:26)
+at com.example.smartshuffle.benchmark.StartupBenchmark$startup$1.invoke(StartupBenchmark.kt:18)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:286)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1$1$tracePath$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record(PerfettoCaptureWrapper.kt:142)
+at androidx.benchmark.perfetto.PerfettoCaptureWrapper.record$default(PerfettoCaptureWrapper.kt:101)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:256)
+at androidx.benchmark.macro.MacrobenchmarkKt$macrobenchmark$measurements$1.invoke(Macrobenchmark.kt:241)
+at androidx.benchmark.perfetto.PerfettoTraceProcessor$Companion.runServer(PerfettoTraceProcessor.kt:105)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmark(Macrobenchmark.kt:241)
+at androidx.benchmark.macro.MacrobenchmarkKt.macrobenchmarkWithStartupMode(Macrobenchmark.kt:422)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated(MacrobenchmarkRule.kt:107)
+at androidx.benchmark.macro.junit4.MacrobenchmarkRule.measureRepeated$default(MacrobenchmarkRule.kt:97)
+at com.example.smartshuffle.benchmark.StartupBenchmark.startup(StartupBenchmark.kt:18)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+

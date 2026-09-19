@@ -1,0 +1,131 @@
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PermissionDeniedScreen(
+  stable onRequestPermission: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun NeonButton(
+  stable text: String
+  stable modifier: Modifier? = @static Companion
+  stable color: Color = @dynamic MaterialTheme.<get-colorScheme>($composer, MaterialTheme.$stable).primary
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun GlitchText(
+  stable text: String
+  stable modifier: Modifier? = @static Companion
+  stable color: Color = @dynamic MaterialTheme.<get-colorScheme>($composer, MaterialTheme.$stable).primary
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun CyberpunkOverlay(
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun EqBars(
+  stable isPlaying: Boolean
+  stable color: Color = @dynamic MaterialTheme.<get-colorScheme>($composer, MaterialTheme.$stable).primary
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun NeonIconButton(
+  stable icon: ImageVector
+  stable contentDescription: String?
+  stable modifier: Modifier? = @static Companion
+  stable color: Color = @dynamic MaterialTheme.<get-colorScheme>($composer, MaterialTheme.$stable).primary
+  unused stable iconSize: Float = @static 32.0f
+  stable onClick: Function0<Unit>
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun QueueBottomSheet(
+  unstable viewModel: LibraryViewModel
+  stable onDismiss: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun NowPlayingCard(
+  stable song: Song
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SwipeToDismissQueueItem(
+  stable song: Song
+  stable displayIndex: Int
+  stable onDelete: Function0<Unit>
+  stable dragHandleModifier: Modifier
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun QueueItemRowDraggable(
+  stable index: Int
+  stable song: Song
+  stable dragHandleModifier: Modifier
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun SleepTimerBottomSheet(
+  stable onDismiss: Function0<Unit>
+  unstable viewModel: LibraryViewModel
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun CyberAudioBootScreen(
+  stable onFinished: Function0<Unit>
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun FolderDetailScreen(
+  unstable viewModel: LibraryViewModel
+  unstable navController: NavController
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun FoldersScreen(
+  unstable viewModel: LibraryViewModel
+  unstable navController: NavController
+  unused stable innerPadding: PaddingValues? = @static PaddingValues(0.dp)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun FolderRow(
+  stable folder: FolderSummary
+  stable modifier: Modifier? = @static Companion
+  stable onClick: Function0<Unit>
+  stable onToggleFavorite: Function0<Unit>
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun HomeScreen(
+  unstable viewModel: LibraryViewModel
+  unstable navController: NavController
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun LibraryScreen(
+  unstable viewModel: LibraryViewModel
+  unused unstable navController: NavController
+  unused stable innerPadding: PaddingValues? = @static PaddingValues(0.dp)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SongGridItem(
+  stable song: Song
+  stable isCurrentlyPlaying: Boolean
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun NowPlayingBar(
+  stable song: Song
+  stable isPlaying: Boolean
+  stable onPlayPauseToggle: Function0<Unit>
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SongRow(
+  stable song: Song
+  stable isCurrentlyPlaying: Boolean
+  stable onClick: Function0<Unit>
+  stable onPlayNext: Function1<Song, Unit>
+  stable onAddToQueue: Function1<Song, Unit>
+)
+fun rememberAlbumArt(
+  unstable uri: Uri
+): ImageBitmap?
+restartable scheme("[androidx.compose.ui.UiComposable]") fun NowPlayingScreen(
+  unstable viewModel: LibraryViewModel
+  unused unstable navController: NavController
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun NowPlayingScreenContent(
+  stable song: Song
+  stable isPlaying: Boolean
+  stable isShuffleEnabled: Boolean
+  stable currentPositionMs: Long
+  stable totalDurationMs: Long
+  stable currentVolume: Float
+  stable onPausePlayClick: Function0<Unit>
+  stable onNextClick: Function0<Unit>
+  stable onPrevClick: Function0<Unit>
+  stable onShuffleToggle: Function0<Unit>
+  stable onQueueClick: Function0<Unit>
+  stable onSleepTimerClick: Function0<Unit>
+  stable isSleepTimerActive: Boolean
+  stable onSeek: Function1<Long, Unit>
+  stable onVolumeChange: Function1<Float, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PlaybackSeekBar(
+  stable currentPosition: Long
+  stable duration: Long
+  stable onSeekFinished: Function1<Long, Unit>
+  stable modifier: Modifier? = @static Companion
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun VerticalVolumeSlider(
+  stable systemVolume: Float
+  stable onVolumeChanged: Function1<Float, Unit>
+  stable modifier: Modifier? = @static Companion
+)

@@ -131,11 +131,7 @@ class PlaybackController(
                             }
                         }
                         
-                        if (_isShuffleEnabled.value && !controller.hasNextMediaItem()) {
-                            scope.launch(Dispatchers.IO) {
-                                appendNextShuffleSong(songId)
-                            }
-                        }
+                        maintainQueueBuffer()
                     }
                 }
 
@@ -161,7 +157,8 @@ class PlaybackController(
     private fun updateQueueState() {
         mediaController?.let { controller ->
             val newQueue = mutableListOf<Song>()
-            for (i in 0 until controller.mediaItemCount) {
+            val currentIndex = controller.currentMediaItemIndex
+            for (i in currentIndex until controller.mediaItemCount) {
                 val mediaItem = controller.getMediaItemAt(i)
                 val songId = mediaItem.mediaId.toLongOrNull()
                 val song = currentPlaylist.find { it.id == songId }
@@ -199,11 +196,27 @@ class PlaybackController(
         _isShuffleEnabled.value = newState
         sharedPrefs.edit().putBoolean("shuffle_enabled", newState).apply()
         
-        // If we just turned shuffle on, make sure we have a next item in the queue
-        if (newState && mediaController?.hasNextMediaItem() == false) {
-            _currentSong.value?.let { current ->
-                scope.launch(Dispatchers.IO) {
-                    appendNextShuffleSong(current.id)
+        if (newState) {
+            // If we just turned shuffle on, make sure our buffer is full
+            maintainQueueBuffer()
+        } else if (!newState) {
+            // We just turned shuffle off. We need to restore the sequential queue tail 
+            // from the current playlist so sequential playback can resume, 
+            // without wiping any manually queued items that might be next.
+            mediaController?.let { controller ->
+                _currentSong.value?.let { current ->
+                    val startIndex = currentPlaylist.indexOf(current)
+                    if (startIndex >= 0 && startIndex < currentPlaylist.size - 1) {
+                        val remainingSongs = currentPlaylist.subList(startIndex + 1, currentPlaylist.size)
+                        
+                        // Check if we need to append. If the queue is already very large, 
+                        // it likely still contains the sequential tail from when it started.
+                        val remainingInPlayer = controller.mediaItemCount - 1 - controller.currentMediaItemIndex
+                        if (remainingInPlayer < remainingSongs.size) {
+                            val mediaItems = remainingSongs.map { createMediaItem(it) }
+                            controller.addMediaItems(mediaItems)
+                        }
+                    }
                 }
             }
         }
@@ -220,10 +233,7 @@ class PlaybackController(
             if (_isShuffleEnabled.value) {
                 val mediaItem = createMediaItem(song)
                 controller.setMediaItem(mediaItem)
-                
-                scope.launch(Dispatchers.IO) {
-                    appendNextShuffleSong(song.id)
-                }
+                maintainQueueBuffer()
             } else {
                 val startIndex = playlist.indexOf(song).takeIf { it >= 0 } ?: 0
                 val mediaItems = playlist.map { createMediaItem(it) }
@@ -234,16 +244,27 @@ class PlaybackController(
         }
     }
 
-    private suspend fun appendNextShuffleSong(currentSongId: Long) {
-        val nextSong = rankingEngine.selectNextShuffleSong(
-            currentSongId = currentSongId,
-            playlistContext = currentPlaylist
-        )
-        nextSong?.let {
-            val mediaItem = createMediaItem(it)
-            // Switch back to Main thread for ExoPlayer modification
-            kotlinx.coroutines.withContext(Dispatchers.Main) {
-                mediaController?.addMediaItem(mediaItem)
+    private val TARGET_UPCOMING_BUFFER = 5
+
+    private fun maintainQueueBuffer() {
+        val controller = mediaController ?: return
+        val upcomingCount = (controller.mediaItemCount - 1) - controller.currentMediaItemIndex
+        if (_isShuffleEnabled.value && upcomingCount < TARGET_UPCOMING_BUFFER) {
+            val needed = TARGET_UPCOMING_BUFFER - upcomingCount
+            scope.launch(Dispatchers.IO) {
+                val baseSongId = _currentSong.value?.id ?: return@launch
+                repeat(needed) {
+                    val nextSong = rankingEngine.selectNextShuffleSong(
+                        currentSongId = baseSongId,
+                        playlistContext = currentPlaylist
+                    )
+                    nextSong?.let {
+                        val mediaItem = createMediaItem(it)
+                        kotlinx.coroutines.withContext(Dispatchers.Main) {
+                            controller.addMediaItem(mediaItem)
+                        }
+                    }
+                }
             }
         }
     }
@@ -287,6 +308,7 @@ class PlaybackController(
             if (!currentPlaylist.contains(song)) {
                 currentPlaylist = currentPlaylist + song
             }
+            updateQueueState()
         }
     }
 
@@ -296,15 +318,34 @@ class PlaybackController(
             if (!currentPlaylist.contains(song)) {
                 currentPlaylist = currentPlaylist + song
             }
+            updateQueueState()
         }
     }
 
-    fun moveQueueItem(fromIndex: Int, toIndex: Int) {
-        mediaController?.moveMediaItem(fromIndex, toIndex)
+    fun moveQueueItem(fromDisplayIndex: Int, toDisplayIndex: Int) {
+        val controller = mediaController ?: return
+        val currentIndex = controller.currentMediaItemIndex
+
+        // Offset display indices to match ExoPlayer's absolute timeline indices
+        // from/to display indices are 0-based in "Up Next" (drop(1))
+        val fromAbsolute = currentIndex + 1 + fromDisplayIndex
+        val toAbsolute = currentIndex + 1 + toDisplayIndex
+
+        if (fromAbsolute in (currentIndex + 1) until controller.mediaItemCount &&
+            toAbsolute in (currentIndex + 1) until controller.mediaItemCount) {
+            controller.moveMediaItem(fromAbsolute, toAbsolute)
+            updateQueueState()
+        }
     }
 
-    fun removeFromQueue(index: Int) {
-        mediaController?.removeMediaItem(index)
+    fun removeQueueItem(displayIndex: Int) {
+        val controller = mediaController ?: return
+        val currentIndex = controller.currentMediaItemIndex
+        val absoluteIndex = currentIndex + 1 + displayIndex
+        if (absoluteIndex in (currentIndex + 1) until controller.mediaItemCount) {
+            controller.removeMediaItem(absoluteIndex)
+            updateQueueState()
+        }
     }
 
     fun seekTo(position: Long) {

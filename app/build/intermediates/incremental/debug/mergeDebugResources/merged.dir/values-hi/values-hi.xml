@@ -23,6 +23,9 @@
     <string name="exo_download_paused_for_network">डाउनलोड शुरू करने के लिए, इंटरनेट से कनेक्ट होने का इंतज़ार है</string>
     <string name="exo_download_paused_for_wifi">डाउनलोड शुरू करने के लिए, वाई-फ़ाई से कनेक्ट होने का इंतज़ार है</string>
     <string name="exo_download_removing">डाउनलोड की गई फ़ाइलें हटाई जा रही हैं</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text"><b><tt>"adb logcat"</tt></b>" की मदद से, "<b><tt>"GlanceAppWidget"</tt></b>" को ढूंढकर असल गड़बड़ी का पता लगाएं"</string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"कॉन्टेंट नहीं दिखाया जा सकता"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Glance App Widget की गड़बड़ी"</b></string>
     <string msgid="6827826412747255547" name="in_progress">"जारी है"</string>
     <string msgid="7933458017204019916" name="indeterminate">"कुछ विकल्पों को चुना गया"</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"बॉटम शीट को छोटा करें"</string>

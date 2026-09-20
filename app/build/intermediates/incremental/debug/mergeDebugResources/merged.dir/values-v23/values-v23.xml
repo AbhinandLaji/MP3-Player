@@ -2,4 +2,5 @@
 <resources>
     <bool name="enable_system_alarm_service_default">false</bool>
     <bool name="enable_system_job_service_default">true</bool>
+    <bool name="glance_appwidget_available">true</bool>
 </resources>

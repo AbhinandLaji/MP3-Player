@@ -23,6 +23,9 @@
     <string name="exo_download_paused_for_network">다운로드를 위해 네트워크 연결 대기 중</string>
     <string name="exo_download_paused_for_wifi">다운로드를 위해 Wi-Fi 연결 대기 중</string>
     <string name="exo_download_removing">다운로드 항목 삭제 중</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text"><b><tt>"adb logcat"</tt></b>"을 사용하여 정확한 오류 확인, "<b><tt>"GlanceAppWidget"</tt></b>" 검색"</string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"콘텐츠를 표시할 수 없음"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Glance 앱 위젯 오류"</b></string>
     <string msgid="6827826412747255547" name="in_progress">"진행 중"</string>
     <string msgid="7933458017204019916" name="indeterminate">"일부 선택됨"</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"하단 시트 접기"</string>

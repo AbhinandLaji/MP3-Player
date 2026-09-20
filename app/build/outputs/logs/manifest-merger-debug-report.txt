@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-43:12
-INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-43:12
-INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-43:12
-INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-43:12
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-66:12
+INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-66:12
+INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-66:12
+INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:2:1-66:12
 MERGED from [com.squareup.leakcanary:leakcanary-android:2.14] C:\Users\abhin\.gradle\caches\transforms-4\445d5f5b11d95c45ef3f54286a44d289\transformed\jetified-leakcanary-android-2.14\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core-splashscreen:1.0.1] C:\Users\abhin\.gradle\caches\transforms-4\fe27bb6d72afe225cfd19d8298daf153\transformed\jetified-core-splashscreen-1.0.1\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.navigation:navigation-common:2.8.0] C:\Users\abhin\.gradle\caches\transforms-4\a21bf4cf1c4cc4db0a90e9a019175912\transformed\navigation-common-2.8.0\AndroidManifest.xml:17:1-22:12
@@ -16,6 +16,9 @@ MERGED from [io.coil-kt:coil-compose:2.6.0] C:\Users\abhin\.gradle\caches\transf
 MERGED from [io.coil-kt:coil-compose-base:2.6.0] C:\Users\abhin\.gradle\caches\transforms-4\8d16f3775085d7b95012a3e9ff0a7622\transformed\jetified-coil-compose-base-2.6.0\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\abhin\.gradle\caches\transforms-4\60dad799645e2008805fe4b10ce5621f\transformed\jetified-accompanist-drawablepainter-0.32.0\AndroidManifest.xml:17:1-23:12
 MERGED from [sh.calvin.reorderable:reorderable-android-debug:2.4.0] C:\Users\abhin\.gradle\caches\transforms-4\6430990a03ab164784e6d3b938cc8217\transformed\jetified-reorderable-debug\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.glance:glance:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\899a94af6de442116da22d4ffbf284e4\transformed\jetified-glance-1.1.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:17:1-61:12
+MERGED from [androidx.glance:glance-material3:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\1235cd1ba6d3490011b0d7dc310bd5d0\transformed\jetified-glance-material3-1.1.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\abhin\.gradle\caches\transforms-4\6385036765018ff3fca310c465dafea8\transformed\jetified-material3-release\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material:material-ripple-android:1.6.4] C:\Users\abhin\.gradle\caches\transforms-4\fb2cef02624fc133f2b05a05fc738c75\transformed\jetified-material-ripple-release\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material:material-icons-extended-android:1.6.4] C:\Users\abhin\.gradle\caches\transforms-4\edb7d46b154476ef696ffee648694641\transformed\jetified-material-icons-extended-release\AndroidManifest.xml:2:1-7:12
@@ -44,6 +47,7 @@ MERGED from [androidx.media3:media3-exoplayer:1.3.0] C:\Users\abhin\.gradle\cach
 MERGED from [androidx.media:media:1.7.0] C:\Users\abhin\.gradle\caches\transforms-4\2df153dd8aa8a4a6aa1e4b408cbb2d31\transformed\media-1.7.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.work:work-runtime-ktx:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\8b4d712f0d40f56784f6924391fa61ca\transformed\work-runtime-ktx-2.9.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:17:1-145:12
+MERGED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:17:1-30:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\abhin\.gradle\caches\transforms-4\e48473d8f4727dd504776b9e923f0f53\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\40efdbd926a78fb17877e1a0e0356bbe\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\a61b38685f2b24df804ec6e6cba43b9c\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
@@ -134,10 +138,14 @@ MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.14] C:\Users\abhi
 	android:name
 		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:11:22-74
 application
-ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:13:5-41:19
-INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:13:5-41:19
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:13:5-64:19
+INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:13:5-64:19
+MERGED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:22:5-59:19
+MERGED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:22:5-59:19
 MERGED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:28:5-143:19
 MERGED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:28:5-143:19
+MERGED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:23:5-28:19
+MERGED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:23:5-28:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\abhin\.gradle\caches\transforms-4\51d2eb150cac0c5acd139b1967a1795a\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\abhin\.gradle\caches\transforms-4\51d2eb150cac0c5acd139b1967a1795a\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.core:core:1.13.1] C:\Users\abhin\.gradle\caches\transforms-4\6eeaf1ff627b09a7d0edd66377cfa081\transformed\core-1.13.1\AndroidManifest.xml:28:5-89
@@ -212,6 +220,36 @@ action#androidx.media3.session.MediaSessionService
 ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:38:17-86
 	android:name
 		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:38:25-83
+receiver#com.example.smartshuffle.ui.widgets.receivers.CyberMediaWidgetReceiver
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:42:9-51:20
+	android:exported
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:44:13-36
+	android:name
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:43:13-74
+intent-filter#action:name:android.appwidget.action.APPWIDGET_UPDATE
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:45:13-47:29
+action#android.appwidget.action.APPWIDGET_UPDATE
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:46:17-84
+	android:name
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:46:25-81
+meta-data#android.appwidget.provider
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:48:13-50:67
+	android:resource
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:50:17-64
+	android:name
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:49:17-58
+receiver#com.example.smartshuffle.ui.widgets.receivers.CyberVolumeWidgetReceiver
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:53:9-63:20
+	android:exported
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:55:13-36
+	android:name
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:54:13-75
+intent-filter#action:name:android.appwidget.action.APPWIDGET_UPDATE+action:name:android.media.VOLUME_CHANGED_ACTION
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:56:13-59:29
+action#android.media.VOLUME_CHANGED_ACTION
+ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:58:17-78
+	android:name
+		ADDED from C:\MusicPLayer\app\src\main\AndroidManifest.xml:58:25-75
 uses-sdk
 INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml
@@ -240,6 +278,12 @@ MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users
 MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\abhin\.gradle\caches\transforms-4\60dad799645e2008805fe4b10ce5621f\transformed\jetified-accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
 MERGED from [sh.calvin.reorderable:reorderable-android-debug:2.4.0] C:\Users\abhin\.gradle\caches\transforms-4\6430990a03ab164784e6d3b938cc8217\transformed\jetified-reorderable-debug\AndroidManifest.xml:5:5-44
 MERGED from [sh.calvin.reorderable:reorderable-android-debug:2.4.0] C:\Users\abhin\.gradle\caches\transforms-4\6430990a03ab164784e6d3b938cc8217\transformed\jetified-reorderable-debug\AndroidManifest.xml:5:5-44
+MERGED from [androidx.glance:glance:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\899a94af6de442116da22d4ffbf284e4\transformed\jetified-glance-1.1.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.glance:glance:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\899a94af6de442116da22d4ffbf284e4\transformed\jetified-glance-1.1.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.glance:glance-material3:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\1235cd1ba6d3490011b0d7dc310bd5d0\transformed\jetified-glance-material3-1.1.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.glance:glance-material3:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\1235cd1ba6d3490011b0d7dc310bd5d0\transformed\jetified-glance-material3-1.1.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\abhin\.gradle\caches\transforms-4\6385036765018ff3fca310c465dafea8\transformed\jetified-material3-release\AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\abhin\.gradle\caches\transforms-4\6385036765018ff3fca310c465dafea8\transformed\jetified-material3-release\AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.material:material-ripple-android:1.6.4] C:\Users\abhin\.gradle\caches\transforms-4\fb2cef02624fc133f2b05a05fc738c75\transformed\jetified-material-ripple-release\AndroidManifest.xml:5:5-44
@@ -296,6 +340,8 @@ MERGED from [androidx.work:work-runtime-ktx:2.9.0] C:\Users\abhin\.gradle\caches
 MERGED from [androidx.work:work-runtime-ktx:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\8b4d712f0d40f56784f6924391fa61ca\transformed\work-runtime-ktx-2.9.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:21:5-44
 MERGED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:21:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\abhin\.gradle\caches\transforms-4\e48473d8f4727dd504776b9e923f0f53\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\abhin\.gradle\caches\transforms-4\e48473d8f4727dd504776b9e923f0f53\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\40efdbd926a78fb17877e1a0e0356bbe\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
@@ -402,6 +448,72 @@ MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\abhin\.gradle\ca
 		INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml
 	android:minSdkVersion
 		INJECTED from C:\MusicPLayer\app\src\main\AndroidManifest.xml
+activity#androidx.glance.appwidget.action.ActionTrampolineActivity
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:23:9-28:62
+	android:enabled
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:25:13-35
+	android:excludeFromRecents
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:26:13-46
+	android:exported
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:27:13-37
+	android:theme
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:28:13-59
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:24:13-85
+activity#androidx.glance.appwidget.action.InvisibleActionTrampolineActivity
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:29:9-36:81
+	android:enabled
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:31:13-35
+	android:launchMode
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:33:13-48
+	android:noHistory
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:34:13-37
+	android:exported
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:32:13-37
+	android:theme
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:36:13-78
+	android:taskAffinity
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:35:13-91
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:30:13-94
+receiver#androidx.glance.appwidget.action.ActionCallbackBroadcastReceiver
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:38:9-41:40
+	android:enabled
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:40:13-35
+	android:exported
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:41:13-37
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:39:13-92
+receiver#androidx.glance.appwidget.UnmanagedSessionReceiver
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:42:9-45:40
+	android:enabled
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:44:13-35
+	android:exported
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:45:13-37
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:43:13-78
+receiver#androidx.glance.appwidget.MyPackageReplacedReceiver
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:46:9-53:20
+	android:enabled
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:48:13-35
+	android:exported
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:49:13-37
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:47:13-79
+intent-filter#action:name:android.intent.action.MY_PACKAGE_REPLACED
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:50:13-52:29
+action#android.intent.action.MY_PACKAGE_REPLACED
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:51:17-84
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:51:25-81
+service#androidx.glance.appwidget.GlanceRemoteViewsService
+ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:55:9-58:72
+	android:exported
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:57:13-36
+	android:permission
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:58:13-69
+	android:name
+		ADDED from [androidx.glance:glance-appwidget:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\8cb68406ff8b048917a02dddc2a02f47\transformed\jetified-glance-appwidget-1.1.0\AndroidManifest.xml:56:13-78
 uses-permission#android.permission.ACCESS_NETWORK_STATE
 ADDED from [androidx.media3:media3-common:1.3.0] C:\Users\abhin\.gradle\caches\transforms-4\a900ef586ac13d10e23e34526aaf102f\transformed\jetified-media3-common-1.3.0\AndroidManifest.xml:22:5-79
 MERGED from [androidx.media3:media3-exoplayer:1.3.0] C:\Users\abhin\.gradle\caches\transforms-4\305ca48f0c56c44a814cb0c642488eb0\transformed\jetified-media3-exoplayer-1.3.0\AndroidManifest.xml:22:5-79
@@ -644,6 +756,14 @@ action#androidx.work.diagnostics.REQUEST_DIAGNOSTICS
 ADDED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:140:17-88
 	android:name
 		ADDED from [androidx.work:work-runtime:2.9.0] C:\Users\abhin\.gradle\caches\transforms-4\b32ae54d34a21abd210bf017c392ca8d\transformed\work-runtime-2.9.0\AndroidManifest.xml:140:25-85
+service#androidx.core.widget.RemoteViewsCompatService
+ADDED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:24:9-27:63
+	tools:ignore
+		ADDED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:27:13-60
+	android:permission
+		ADDED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:26:13-69
+	android:name
+		ADDED from [androidx.core:core-remoteviews:1.1.0] C:\Users\abhin\.gradle\caches\transforms-4\646851f742ef6fb89bbd7ee5ab26f52b\transformed\jetified-core-remoteviews-1.1.0\AndroidManifest.xml:25:13-73
 meta-data#androidx.emoji2.text.EmojiCompatInitializer
 ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\abhin\.gradle\caches\transforms-4\51d2eb150cac0c5acd139b1967a1795a\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
 	android:value

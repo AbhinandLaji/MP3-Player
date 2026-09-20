@@ -53,6 +53,7 @@ class RankingEngine(
 
     suspend fun selectNextShuffleSong(
         currentSongId: Long,
+        excludedSongIds: Set<Long>,
         playlistContext: List<Song>? = null // New parameter!
     ): Song? {
         val startTime = System.currentTimeMillis()
@@ -64,12 +65,12 @@ class RankingEngine(
             songDao.getAllSongsSync() // Your existing global fallback
         }
 
-        // 2. Filter out the currently playing song
-        val validCandidates = candidatePool.filter { it.id != currentSongId }
+        // 2. Filter out the excluded songs
+        val validCandidates = candidatePool.filter { it.id !in excludedSongIds }
 
         if (validCandidates.isEmpty()) {
             val duration = System.currentTimeMillis() - startTime
-            android.util.Log.d("PERF_AUDIT", "selectNextShuffleSong (empty candidates) executed in ${duration}ms")
+            println("PERF_AUDIT: selectNextShuffleSong (empty candidates) executed in ${duration}ms")
             return null
         }
 
@@ -98,14 +99,14 @@ class RankingEngine(
             randomValue -= weight
             if (randomValue <= 0.0) {
                 val duration = System.currentTimeMillis() - startTime
-                android.util.Log.d("PERF_AUDIT", "selectNextShuffleSong executed in ${duration}ms for ${candidateWeights.size} candidates")
+                println("PERF_AUDIT: selectNextShuffleSong executed in ${duration}ms for ${candidateWeights.size} candidates")
                 return song
             }
         }
         
         // Fallback in case of floating point inaccuracies
         val duration = System.currentTimeMillis() - startTime
-        android.util.Log.d("PERF_AUDIT", "selectNextShuffleSong (fallback) executed in ${duration}ms for ${candidateWeights.size} candidates")
+        println("PERF_AUDIT: selectNextShuffleSong (fallback) executed in ${duration}ms for ${candidateWeights.size} candidates")
         return candidateWeights.lastOrNull()?.first
     }
 }

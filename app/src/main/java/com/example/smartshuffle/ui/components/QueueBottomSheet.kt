@@ -63,7 +63,11 @@ fun QueueBottomSheet(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Section 2: NEXT IN QUEUE
-                val originalUpNext = queue.drop(1)
+                val originalUpNext = remember(queue) {
+                    queue.drop(1).mapIndexed { index, song ->
+                        "${song.id}_$index" to song
+                    }
+                }
                 
                 if (originalUpNext.isNotEmpty()) {
                     Text(
@@ -98,13 +102,13 @@ fun QueueBottomSheet(
                         state = lazyListState,
                         modifier = Modifier.weight(1f, fill = false)
                     ) {
-                        itemsIndexed(upNext, key = { _, song -> song.id }) { index, song ->
+                        itemsIndexed(upNext, key = { _, pair -> pair.first }) { index, pair ->
+                            val song = pair.second
                             ReorderableItem(
                                 state = reorderableState,
-                                key = song.id
+                                key = pair.first
                             ) { isDragging ->
                                 // The item itself is wrapped in SwipeToDismiss
-                                val absoluteDisplayIndex = index + 1
                                 val elevation = if (isDragging) 8.dp else 0.dp
                                 
                                 Box(
@@ -195,7 +199,7 @@ fun SwipeToDismissQueueItem(
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.EndToStart || it == SwipeToDismissBoxValue.StartToEnd) {
+            if (it == SwipeToDismissBoxValue.EndToStart) {
                 onDelete()
                 true
             } else {
@@ -206,8 +210,9 @@ fun SwipeToDismissQueueItem(
 
     SwipeToDismissBox(
         state = dismissState,
+        enableDismissFromStartToEnd = false,
         backgroundContent = {
-            val color = if (dismissState.dismissDirection != SwipeToDismissBoxValue.Settled) {
+            val color = if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
                 NeonRed.copy(alpha = 0.5f)
             } else Color.Transparent
             Box(

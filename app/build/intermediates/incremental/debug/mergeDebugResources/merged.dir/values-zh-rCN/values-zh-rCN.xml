@@ -23,6 +23,9 @@
     <string name="exo_download_paused_for_network">正在等待连接到网络以进行下载</string>
     <string name="exo_download_paused_for_wifi">正在等待连接到 WLAN 网络以进行下载</string>
     <string name="exo_download_removing">正在移除下载内容</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text">"运行 "<b><tt>"adb logcat"</tt></b>" 后搜索 "<b><tt>"GlanceAppWidget"</tt></b>" 可查看确切错误"</string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"无法显示内容"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Glance 应用微件错误"</b></string>
     <string msgid="6827826412747255547" name="in_progress">"进行中"</string>
     <string msgid="7933458017204019916" name="indeterminate">"部分选中"</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"收起底部动作条"</string>

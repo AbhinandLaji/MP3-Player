@@ -129,3 +129,6 @@ restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun VerticalV
   stable onVolumeChanged: Function1<Float, Unit>
   stable modifier: Modifier? = @static Companion
 )
+restartable skippable scheme("[0, [0]]") fun SmartShuffleTheme(
+  stable content: Function2<Composer, Int, Unit>
+)

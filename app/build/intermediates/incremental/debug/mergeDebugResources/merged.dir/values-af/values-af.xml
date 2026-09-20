@@ -23,6 +23,9 @@
     <string name="exo_download_paused_for_network">Aflaaie wag tans vir netwerk</string>
     <string name="exo_download_paused_for_wifi">Aflaaie wag tans vir wi-fi</string>
     <string name="exo_download_removing">Verwyder tans aflaaie</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text">"Gaan die presiese fout na deur "<b><tt>"adb logcat"</tt></b>" te gebruik en te soek na "<b><tt>"GlanceAppWidget"</tt></b></string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"Kan nie inhoud wys nie"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Glance-applegstukfout"</b></string>
     <string msgid="6827826412747255547" name="in_progress">"Besig"</string>
     <string msgid="7933458017204019916" name="indeterminate">"Gedeeltelik gemerk"</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"Vou onderste blad in"</string>

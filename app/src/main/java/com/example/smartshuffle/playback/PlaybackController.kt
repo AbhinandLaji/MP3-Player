@@ -29,6 +29,11 @@ class PlaybackController(
     private val rankingEngine: RankingEngine,
     private val userPreferences: com.example.smartshuffle.data.UserPreferences
 ) {
+    companion object {
+        const val ORIGIN_SEQUENTIAL_FILL = "SEQUENTIAL_FILL"
+        const val ORIGIN_MANUAL = "MANUAL"
+        const val ORIGIN_SHUFFLE = "SHUFFLE"
+    }
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
     private val scope = CoroutineScope(Dispatchers.Main + Job())
@@ -197,6 +202,17 @@ class PlaybackController(
         sharedPrefs.edit().putBoolean("shuffle_enabled", newState).apply()
         
         if (newState) {
+            mediaController?.let { controller ->
+                // Remove upcoming SEQUENTIAL_FILL items before topping up with shuffle items
+                val currentIndex = controller.currentMediaItemIndex
+                for (i in controller.mediaItemCount - 1 downTo currentIndex + 1) {
+                    val mediaItem = controller.getMediaItemAt(i)
+                    val origin = mediaItem.mediaMetadata.extras?.getString("queue_origin")
+                    if (origin == ORIGIN_SEQUENTIAL_FILL || origin == null) {
+                        controller.removeMediaItem(i)
+                    }
+                }
+            }
             // If we just turned shuffle on, make sure our buffer is full
             maintainQueueBuffer()
         } else if (!newState) {
@@ -213,7 +229,7 @@ class PlaybackController(
                         // it likely still contains the sequential tail from when it started.
                         val remainingInPlayer = controller.mediaItemCount - 1 - controller.currentMediaItemIndex
                         if (remainingInPlayer < remainingSongs.size) {
-                            val mediaItems = remainingSongs.map { createMediaItem(it) }
+                            val mediaItems = remainingSongs.map { createMediaItem(it, ORIGIN_SEQUENTIAL_FILL) }
                             controller.addMediaItems(mediaItems)
                         }
                     }
@@ -231,12 +247,12 @@ class PlaybackController(
         
         mediaController?.let { controller ->
             if (_isShuffleEnabled.value) {
-                val mediaItem = createMediaItem(song)
+                val mediaItem = createMediaItem(song, ORIGIN_MANUAL)
                 controller.setMediaItem(mediaItem)
                 maintainQueueBuffer()
             } else {
                 val startIndex = playlist.indexOf(song).takeIf { it >= 0 } ?: 0
-                val mediaItems = playlist.map { createMediaItem(it) }
+                val mediaItems = playlist.map { createMediaItem(it, ORIGIN_SEQUENTIAL_FILL) }
                 controller.setMediaItems(mediaItems, startIndex, C.TIME_UNSET)
             }
             controller.prepare()
@@ -251,25 +267,47 @@ class PlaybackController(
         val upcomingCount = (controller.mediaItemCount - 1) - controller.currentMediaItemIndex
         if (_isShuffleEnabled.value && upcomingCount < TARGET_UPCOMING_BUFFER) {
             val needed = TARGET_UPCOMING_BUFFER - upcomingCount
+            
+            // Extract player state on the main thread to prevent IllegalStateException
+            val initialExcludedIds = mutableSetOf<Long>()
+            _currentSong.value?.id?.let { initialExcludedIds.add(it) }
+            val currentIndex = controller.currentMediaItemIndex
+            for (i in (currentIndex + 1) until controller.mediaItemCount) {
+                val mediaItem = controller.getMediaItemAt(i)
+                mediaItem.mediaId.toLongOrNull()?.let { initialExcludedIds.add(it) }
+            }
+
             scope.launch(Dispatchers.IO) {
                 val baseSongId = _currentSong.value?.id ?: return@launch
+                
+                val excludedIds = initialExcludedIds
+
+
                 repeat(needed) {
                     val nextSong = rankingEngine.selectNextShuffleSong(
                         currentSongId = baseSongId,
+                        excludedSongIds = excludedIds,
                         playlistContext = currentPlaylist
                     )
-                    nextSong?.let {
-                        val mediaItem = createMediaItem(it)
+                    if (nextSong != null) {
+                        val mediaItem = createMediaItem(nextSong, ORIGIN_SHUFFLE)
+                        excludedIds.add(nextSong.id)
                         kotlinx.coroutines.withContext(Dispatchers.Main) {
                             controller.addMediaItem(mediaItem)
                         }
+                    } else {
+                        android.util.Log.w("PlaybackController", "Library exhausted, stopping fill to avoid repeats.")
+                        return@launch
                     }
                 }
             }
         }
     }
 
-    private fun createMediaItem(song: Song): MediaItem {
+    private fun createMediaItem(song: Song, origin: String): MediaItem {
+        val extras = android.os.Bundle().apply {
+            putString("queue_origin", origin)
+        }
         return MediaItem.Builder()
             .setMediaId(song.id.toString())
             .setUri(song.filePath)
@@ -279,6 +317,7 @@ class PlaybackController(
                     .setArtist(song.artist)
                     .setAlbumTitle(song.album)
                     .setArtworkUri(song.albumArtUri?.let { uri -> android.net.Uri.parse(uri) })
+                    .setExtras(extras)
                     .build()
             )
             .build()
@@ -302,7 +341,7 @@ class PlaybackController(
     
     fun playNext(song: Song) {
         mediaController?.let { controller ->
-            val mediaItem = createMediaItem(song)
+            val mediaItem = createMediaItem(song, ORIGIN_MANUAL)
             val nextIndex = (controller.currentMediaItemIndex + 1).coerceAtMost(controller.mediaItemCount)
             controller.addMediaItem(nextIndex, mediaItem)
             if (!currentPlaylist.contains(song)) {
@@ -314,7 +353,7 @@ class PlaybackController(
 
     fun addToQueue(song: Song) {
         mediaController?.let { controller ->
-            controller.addMediaItem(createMediaItem(song))
+            controller.addMediaItem(createMediaItem(song, ORIGIN_MANUAL))
             if (!currentPlaylist.contains(song)) {
                 currentPlaylist = currentPlaylist + song
             }
@@ -345,6 +384,10 @@ class PlaybackController(
         if (absoluteIndex in (currentIndex + 1) until controller.mediaItemCount) {
             controller.removeMediaItem(absoluteIndex)
             updateQueueState()
+            
+            if (_isShuffleEnabled.value) {
+                maintainQueueBuffer()
+            }
         }
     }
 

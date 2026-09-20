@@ -291,7 +291,7 @@ class RankingEngineTest {
         val counts = mutableMapOf<Long, Int>()
         val iterations = 2000
         for (i in 0 until iterations) {
-            val selected = engine.selectNextShuffleSong(currentSongId = 99L)
+            val selected = engine.selectNextShuffleSong(currentSongId = 99L, excludedSongIds = setOf(99L))
             assertNotNull("selectNextShuffleSong should never return null with valid candidates", selected)
             counts[selected!!.id] = (counts[selected.id] ?: 0) + 1
         }
@@ -321,7 +321,7 @@ class RankingEngineTest {
         val counts = mutableMapOf<Long, Int>()
         val iterations = 1000
         for (i in 0 until iterations) {
-            val selected = engine.selectNextShuffleSong(currentSongId = 99L)
+            val selected = engine.selectNextShuffleSong(currentSongId = 99L, excludedSongIds = setOf(99L))
             assertNotNull(selected)
             counts[selected!!.id] = (counts[selected.id] ?: 0) + 1
         }
@@ -358,7 +358,7 @@ class RankingEngineTest {
         val counts = mutableMapOf<Long, Int>()
         val iterations = 5000
         for (i in 0 until iterations) {
-            val selected = engine.selectNextShuffleSong(currentSongId = 99L)
+            val selected = engine.selectNextShuffleSong(currentSongId = 99L, excludedSongIds = setOf(99L))
             assertNotNull(selected)
             counts[selected!!.id] = (counts[selected.id] ?: 0) + 1
         }
@@ -388,7 +388,7 @@ class RankingEngineTest {
         val excludedId = 3L
         val iterations = 200
         for (i in 0 until iterations) {
-            val selected = engine.selectNextShuffleSong(currentSongId = excludedId)
+            val selected = engine.selectNextShuffleSong(currentSongId = excludedId, excludedSongIds = setOf(excludedId))
             assertNotNull(selected)
             assertNotEquals(
                 "Excluded song (currentSongId=$excludedId) was selected - this should never happen",
@@ -403,13 +403,13 @@ class RankingEngineTest {
         // Only one song, and it's excluded
         songDao.songs.add(makeSong(1L))
 
-        val result = engine.selectNextShuffleSong(currentSongId = 1L)
+        val result = engine.selectNextShuffleSong(currentSongId = 1L, excludedSongIds = setOf(1L))
         assertNull("Should return null when only candidate is excluded", result)
     }
 
     @Test
     fun `selectNextShuffleSong returns null when library is empty`() = runTest {
-        val result = engine.selectNextShuffleSong(currentSongId = 1L)
+        val result = engine.selectNextShuffleSong(currentSongId = 1L, excludedSongIds = setOf(1L))
         assertNull("Should return null with empty library", result)
     }
 
@@ -426,6 +426,7 @@ class RankingEngineTest {
         for (i in 0 until iterations) {
             val selected = engine.selectNextShuffleSong(
                 currentSongId = 99L,
+                excludedSongIds = setOf(99L),
                 playlistContext = playlistContext
             )
             assertNotNull(selected)
@@ -434,5 +435,52 @@ class RankingEngineTest {
                 selected.id == 1L || selected.id == 2L
             )
         }
+    }
+
+    @Test
+    fun `automated reproduction test - fill buffer 50 times and check for duplicates`() = runTest {
+        // Setup library of 20 songs
+        val allSongs = (1L..20L).map { makeSong(it) }
+        allSongs.forEach { songDao.songs.add(it) }
+
+        var totalCyclesWithDuplicates = 0
+        val cycles = 50
+
+        for (cycle in 1..cycles) {
+            val batch = mutableListOf<Song>()
+            val excludedIds = mutableSetOf<Long>()
+            
+            // Assume currently playing song is ID 99 (not in library) just to start
+            val baseSongId = 99L
+            excludedIds.add(baseSongId)
+
+            for (i in 1..5) {
+                // Simulate log for step 2
+                println("Cycle $cycle, Pick $i: Exclusion set size: ${excludedIds.size}, containing: $excludedIds")
+                
+                val nextSong = engine.selectNextShuffleSong(
+                    currentSongId = baseSongId,
+                    excludedSongIds = excludedIds
+                )
+                
+                if (nextSong != null) {
+                    batch.add(nextSong)
+                    excludedIds.add(nextSong.id)
+                }
+            }
+            
+            // Check for duplicates in this batch
+            val uniqueIdsInBatch = batch.map { it.id }.toSet()
+            if (uniqueIdsInBatch.size < batch.size) {
+                totalCyclesWithDuplicates++
+            }
+        }
+        
+        println("TEST RESULT: Out of $cycles fill cycles, $totalCyclesWithDuplicates contained a duplicate within the same batch.")
+        assertEquals(
+            "Out of $cycles fill cycles, 0 should contain duplicates",
+            0,
+            totalCyclesWithDuplicates
+        )
     }
 }

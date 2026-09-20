@@ -32,6 +32,10 @@
         "source": "com.example.smartshuffle.app-main-6:/mipmap-hdpi/ic_launcher.webp"
     },
     {
+        "merged": "com.example.smartshuffle.app-debug-4:/xml_cyber_media_widget_info.xml.flat",
+        "source": "com.example.smartshuffle.app-main-6:/xml/cyber_media_widget_info.xml"
+    },
+    {
         "merged": "com.example.smartshuffle.app-debug-4:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
         "source": "com.example.smartshuffle.app-main-6:/mipmap-xxxhdpi/ic_launcher_round.webp"
     },
@@ -50,6 +54,10 @@
     {
         "merged": "com.example.smartshuffle.app-debug-4:/mipmap-mdpi_ic_launcher.webp.flat",
         "source": "com.example.smartshuffle.app-main-6:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.smartshuffle.app-debug-4:/xml_cyber_volume_widget_info.xml.flat",
+        "source": "com.example.smartshuffle.app-main-6:/xml/cyber_volume_widget_info.xml"
     },
     {
         "merged": "com.example.smartshuffle.app-debug-4:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",

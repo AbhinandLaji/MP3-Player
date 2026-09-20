@@ -23,6 +23,9 @@
     <string name="exo_download_paused_for_network">डाउनलोड नेटवर्कची प्रतीक्षा करत आहेत</string>
     <string name="exo_download_paused_for_wifi">डाउनलोड वायफाय ची प्रतीक्षा करत आहेत</string>
     <string name="exo_download_removing">डाउनलोड काढून टाकत आहे</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text"><b><tt>"GlanceAppWidget"</tt></b>" शोधून, "<b><tt>"adb logcat"</tt></b>" वापरून नेमकी एरर तपासा"</string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"आशय दाखवू शकत नाही"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Glance अ‍ॅप विजेट एरर"</b></string>
     <string msgid="6827826412747255547" name="in_progress">"प्रगतीपथावर आहे"</string>
     <string msgid="7933458017204019916" name="indeterminate">"अंशतः तपासले"</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"तळाशी असलेली शीट कोलॅप्स करा"</string>

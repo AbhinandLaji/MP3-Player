@@ -9,3 +9,5 @@ mipmap ic_launcher_round
 string app_name
 style Theme.SmartShuffle
 style Theme.SmartShuffle.Splash
+xml cyber_media_widget_info
+xml cyber_volume_widget_info

@@ -28,6 +28,40 @@ stable class AppDatabase {
 stable class MusicScanner {
   <runtime stability> = Stable
 }
+stable class PlayCount {
+  stable val songId: Long
+  stable val playCount: Int
+  <runtime stability> = Stable
+}
+stable class PlayHistory {
+  stable val id: Long
+  stable val songId: Long
+  stable val timestamp: Long
+  stable val playType: PlayType
+  <runtime stability> = Stable
+}
+stable class QueueAssociation {
+  stable val songIdA: Long
+  stable val songIdB: Long
+  stable val count: Int
+  <runtime stability> = Stable
+}
+stable class Song {
+  stable val id: Long
+  stable val title: String
+  stable val artist: String
+  stable val album: String
+  stable val duration: Long
+  stable val filePath: String
+  stable val albumArtUri: String?
+  <runtime stability> = Stable
+}
+stable class SongRank {
+  stable val songId: Long
+  stable val rankValue: Float
+  stable val lastUpdated: Long
+  <runtime stability> = Stable
+}
 unstable class SongRepositoryImpl {
   runtime val songDao: SongDao
   runtime val queueAssociationDao: QueueAssociationDao
@@ -38,6 +72,13 @@ unstable class UserPreferences {
   unstable val context: Context
   unstable val sleepTimerTargetFlow: Flow<Long?>
   <runtime stability> = Unstable
+}
+stable class FolderSummary {
+  stable val folderName: String
+  stable val folderPath: String
+  stable val songCount: Int
+  stable val isFavorite: Boolean
+  <runtime stability> = Stable
 }
 stable class RankingEngine {
   runtime val rankDao: RankDao
@@ -87,6 +128,21 @@ unstable class SystemVolumeManager {
   unstable val audioManager: AudioManager
   <runtime stability> = Unstable
 }
+stable class HomeRoute {
+  <runtime stability> = Stable
+}
+stable class LibraryRoute {
+  <runtime stability> = Stable
+}
+stable class FoldersRoute {
+  <runtime stability> = Stable
+}
+stable class FolderDetailRoute {
+  <runtime stability> = Stable
+}
+stable class NowPlayingRoute {
+  <runtime stability> = Stable
+}
 unstable class LibraryViewModel {
   runtime val songRepository: SongRepository
   runtime val playHistoryDao: PlayHistoryDao
@@ -106,5 +162,40 @@ unstable class LibraryViewModel {
   unstable val folders: StateFlow<List<FolderSummary>>
   unstable val _selectedFolderPath: MutableStateFlow<String?>
   unstable val selectedFolderSongs: StateFlow<List<Song>>
+  <runtime stability> = Unstable
+}
+unstable class CyberMediaWidget {
+  unstable val stateDefinition: GlanceStateDefinition<*>
+  <runtime stability> = Unstable
+}
+stable class CyberVolumeWidget {
+  <runtime stability> = Stable
+}
+stable class PlayPauseActionCallback {
+  <runtime stability> = Stable
+}
+stable class SkipNextActionCallback {
+  <runtime stability> = Stable
+}
+stable class SkipPrevActionCallback {
+  <runtime stability> = Stable
+}
+stable class VolumeUpActionCallback {
+  <runtime stability> = Stable
+}
+stable class VolumeDownActionCallback {
+  <runtime stability> = Stable
+}
+stable class VolumeMuteActionCallback {
+  <runtime stability> = Stable
+}
+unstable class CyberMediaWidgetReceiver {
+  runtime val glanceAppWidget: GlanceAppWidget
+  unstable val coroutineScope: CoroutineScope
+  <runtime stability> = Unstable
+}
+unstable class CyberVolumeWidgetReceiver {
+  runtime val glanceAppWidget: GlanceAppWidget
+  unstable val coroutineScope: CoroutineScope
   <runtime stability> = Unstable
 }

@@ -23,6 +23,9 @@
     <string name="exo_download_paused_for_network">Ցանցի որոնում</string>
     <string name="exo_download_paused_for_wifi">Wi-Fi ցանցի որոնում</string>
     <string name="exo_download_removing">Ներբեռնումները հեռացվում են</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text">"Ստուգեք, թե իրականում ինչ սխալ է տեղի ունեցել, "<b><tt>"adb logcat"</tt></b>"-ի միջոցով՝ որոնելով "<b><tt>"GlanceAppWidget"</tt></b>" բառը"</string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"Հնարավոր չէ ցույց տալ բովանդակությունը"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"«Հակիրճ գլխավորի մասին» վիջեթի սխալ"</b></string>
     <string msgid="6827826412747255547" name="in_progress">"Ընթացքում է"</string>
     <string msgid="7933458017204019916" name="indeterminate">"Մասնակի նշված"</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"Ծալել ներքևի էկրանը"</string>

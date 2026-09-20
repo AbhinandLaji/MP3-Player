@@ -1,0 +1,8 @@
+unstable class RankingEngineTest {
+  unstable var rankDao: FakeRankDao
+  unstable var playHistoryDao: FakePlayHistoryDao
+  unstable var songDao: FakeSongDao
+  unstable var queueDao: FakeQueueAssociationDao
+  runtime var engine: RankingEngine
+  <runtime stability> = Unstable
+}

@@ -10,4 +10,5 @@ interface SongRepository {
     suspend fun toggleFavoriteFolder(folderPath: String)
     suspend fun syncLibrary()
     suspend fun recordQueueAssociation(currentSongId: Long, queuedSongId: Long)
+    suspend fun getSongById(id: Long): Song?
 }

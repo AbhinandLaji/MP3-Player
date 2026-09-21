@@ -80,7 +80,6 @@ class RankingEngine(
 
         if (validCandidates.isEmpty()) {
             val duration = System.currentTimeMillis() - startTime
-            println("PERF_AUDIT: selectNextShuffleSong (empty candidates) executed in ${duration}ms")
             return null
         }
 
@@ -109,14 +108,12 @@ class RankingEngine(
             randomValue -= weight
             if (randomValue <= 0.0) {
                 val duration = System.currentTimeMillis() - startTime
-                println("PERF_AUDIT: selectNextShuffleSong executed in ${duration}ms for ${candidateWeights.size} candidates")
                 return song
             }
         }
         
         // Fallback in case of floating point inaccuracies
         val duration = System.currentTimeMillis() - startTime
-        println("PERF_AUDIT: selectNextShuffleSong (fallback) executed in ${duration}ms for ${candidateWeights.size} candidates")
         return candidateWeights.lastOrNull()?.first
     }
 }

@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
         checkIntent(intent)
         
         val app = application as SmartShuffleApplication
-        playbackController = PlaybackController(this, app.container.rankingEngine, app.container.userPreferences)
+        playbackController = PlaybackController(this, app.container.rankingEngine, app.container.userPreferences, app.container.songRepository)
 
         checkAndRequestPermission()
 

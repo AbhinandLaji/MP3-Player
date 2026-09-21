@@ -95,6 +95,7 @@ unstable class PlaybackController {
   unstable val context: Context
   unstable val rankingEngine: RankingEngine
   unstable val userPreferences: UserPreferences
+  runtime val songRepository: SongRepository
   unstable var controllerFuture: ListenableFuture<MediaController>?
   unstable var mediaController: MediaController?
   unstable val scope: CoroutineScope
@@ -122,6 +123,7 @@ unstable class PlaybackController {
 }
 unstable class PlaybackService {
   unstable var mediaSession: MediaSession?
+  unstable val scope: CoroutineScope
   <runtime stability> = Unstable
 }
 unstable class SystemVolumeManager {

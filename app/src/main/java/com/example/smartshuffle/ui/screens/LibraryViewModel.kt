@@ -33,7 +33,6 @@ class LibraryViewModel(
         val playCountMap = playCounts.associateBy({ it.songId }, { it.playCount })
         val result = allSongs.sortedByDescending { playCountMap[it.id] ?: 0 }
         val duration = System.currentTimeMillis() - startTime
-        android.util.Log.d("PERF_AUDIT", "LibraryViewModel combined getAllSongs + getPlayCounts in ${duration}ms for ${allSongs.size} songs")
         result
     }.stateIn(
         scope = viewModelScope,

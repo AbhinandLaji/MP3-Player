@@ -18,6 +18,9 @@ interface SongDao {
     @Query("SELECT * FROM songs WHERE filePath = :path LIMIT 1")
     suspend fun getSongByPath(path: String): Song?
     
+    @Query("SELECT * FROM songs WHERE id = :id LIMIT 1")
+    suspend fun getSongById(id: Long): Song?
+    
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(song: Song): Long
     

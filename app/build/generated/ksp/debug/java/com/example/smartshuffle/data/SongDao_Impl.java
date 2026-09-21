@@ -282,6 +282,59 @@ public final class SongDao_Impl implements SongDao {
     }, $completion);
   }
 
+  @Override
+  public Object getSongById(final long id, final Continuation<? super Song> $completion) {
+    final String _sql = "SELECT * FROM songs WHERE id = ? LIMIT 1";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, id);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<Song>() {
+      @Override
+      @Nullable
+      public Song call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTitle = CursorUtil.getColumnIndexOrThrow(_cursor, "title");
+          final int _cursorIndexOfArtist = CursorUtil.getColumnIndexOrThrow(_cursor, "artist");
+          final int _cursorIndexOfAlbum = CursorUtil.getColumnIndexOrThrow(_cursor, "album");
+          final int _cursorIndexOfDuration = CursorUtil.getColumnIndexOrThrow(_cursor, "duration");
+          final int _cursorIndexOfFilePath = CursorUtil.getColumnIndexOrThrow(_cursor, "filePath");
+          final int _cursorIndexOfAlbumArtUri = CursorUtil.getColumnIndexOrThrow(_cursor, "albumArtUri");
+          final Song _result;
+          if (_cursor.moveToFirst()) {
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpTitle;
+            _tmpTitle = _cursor.getString(_cursorIndexOfTitle);
+            final String _tmpArtist;
+            _tmpArtist = _cursor.getString(_cursorIndexOfArtist);
+            final String _tmpAlbum;
+            _tmpAlbum = _cursor.getString(_cursorIndexOfAlbum);
+            final long _tmpDuration;
+            _tmpDuration = _cursor.getLong(_cursorIndexOfDuration);
+            final String _tmpFilePath;
+            _tmpFilePath = _cursor.getString(_cursorIndexOfFilePath);
+            final String _tmpAlbumArtUri;
+            if (_cursor.isNull(_cursorIndexOfAlbumArtUri)) {
+              _tmpAlbumArtUri = null;
+            } else {
+              _tmpAlbumArtUri = _cursor.getString(_cursorIndexOfAlbumArtUri);
+            }
+            _result = new Song(_tmpId,_tmpTitle,_tmpArtist,_tmpAlbum,_tmpDuration,_tmpFilePath,_tmpAlbumArtUri);
+          } else {
+            _result = null;
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

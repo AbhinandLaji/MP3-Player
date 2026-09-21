@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "SmartShuffle"
 include(":app")
-include(":macrobenchmark")
+

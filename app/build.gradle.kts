@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.7.3")
     
     // Compose
     implementation(platform("androidx.compose:compose-bom:2024.03.00"))
@@ -82,8 +83,6 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Profile Installer (for macrobenchmark on API 36)
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")

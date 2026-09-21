@@ -22,12 +22,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class PlaybackController(
     private val context: Context,
     private val rankingEngine: RankingEngine,
-    private val userPreferences: com.example.smartshuffle.data.UserPreferences
+    private val userPreferences: com.example.smartshuffle.data.UserPreferences,
+    private val songRepository: com.example.smartshuffle.domain.SongRepository
 ) {
     companion object {
         const val ORIGIN_SEQUENTIAL_FILL = "SEQUENTIAL_FILL"
@@ -95,6 +97,13 @@ class PlaybackController(
 
     private fun setupController() {
         mediaController?.let { controller ->
+            if (controller.currentMediaItem != null) {
+                updateCurrentSong(controller.currentMediaItem)
+                _duration.value = controller.duration.coerceAtLeast(0L)
+                _currentPosition.value = controller.currentPosition.coerceAtLeast(0L)
+            } else {
+                restorePlaybackState(controller)
+            }
             controller.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
@@ -161,9 +170,9 @@ class PlaybackController(
                 }
             })
             _volume.value = controller.volume
+            _isPlaying.value = controller.isPlaying
             
             if (controller.isPlaying) {
-                _isPlaying.value = true
                 startProgressJob()
             }
             updateQueueState()
@@ -191,16 +200,40 @@ class PlaybackController(
             _currentSong.value = null
             return
         }
-        val songId = mediaItem.mediaId.toLongOrNull()
-        _currentSong.value = currentPlaylist.find { it.id == songId }
+        val songId = mediaItem.mediaId.toLongOrNull() ?: return
+        
+        val songInPlaylist = currentPlaylist.find { it.id == songId }
+        if (songInPlaylist != null) {
+            _currentSong.value = songInPlaylist
+        } else {
+            scope.launch(Dispatchers.IO) {
+                val dbSong = songRepository.getSongById(songId)
+                if (dbSong != null) {
+                    _currentSong.value = dbSong
+                } else {
+                    _currentSong.value = null
+                }
+            }
+        }
     }
 
     private fun startProgressJob() {
         progressJob?.cancel()
         progressJob = scope.launch {
+            var tickCount = 0
             while (isActive && mediaController?.isPlaying == true) {
                 mediaController?.let {
                     _currentPosition.value = it.currentPosition.coerceAtLeast(0)
+                    tickCount++
+                    if (tickCount >= 50) {
+                        val songId = _currentSong.value?.id
+                        if (songId != null) {
+                            scope.launch(Dispatchers.IO) {
+                                userPreferences.savePlaybackState(songId, _currentPosition.value)
+                            }
+                        }
+                        tickCount = 0
+                    }
                 }
                 delay(200L)
             }
@@ -313,7 +346,6 @@ class PlaybackController(
                     }
                 }
                 val fillDuration = System.currentTimeMillis() - fillStartTime
-                android.util.Log.d("PERF_AUDIT", "maintainQueueBuffer fill cycle for $needed songs completed in ${fillDuration}ms")
             }
         }
     }
@@ -339,6 +371,11 @@ class PlaybackController(
 
     fun pause() {
         mediaController?.pause()
+        _currentSong.value?.id?.let { songId ->
+            scope.launch(Dispatchers.IO) {
+                userPreferences.savePlaybackState(songId, _currentPosition.value)
+            }
+        }
     }
 
     fun resume() {
@@ -432,6 +469,30 @@ class PlaybackController(
         _sleepTimerTargetMillis.value = null
         scope.launch(Dispatchers.IO) {
             userPreferences.clearSleepTimerTarget()
+        }
+    }
+
+    private fun restorePlaybackState(controller: MediaController) {
+        scope.launch {
+            val (songId, positionMs) = userPreferences.getPlaybackState()
+            if (songId != null && songId != -1L) {
+                val allSongs = songRepository.getAllSongs().first()
+                val song = allSongs.find { it.id == songId }
+                if (song != null) {
+                    val mediaItem = createMediaItem(song, ORIGIN_MANUAL)
+                    controller.setMediaItem(mediaItem)
+                    controller.prepare()
+                    if (positionMs != null && positionMs > 0) {
+                        controller.seekTo(positionMs)
+                        _currentPosition.value = positionMs
+                    }
+                    if (_isShuffleEnabled.value) {
+                        maintainQueueBuffer()
+                    }
+                } else {
+                    userPreferences.savePlaybackState(-1, 0)
+                }
+            }
         }
     }
 }

@@ -71,32 +71,38 @@ public final class RankDao_Impl implements RankDao {
   }
 
   @Override
-  public List<SongRank> getAllRanks() {
+  public Object getAllRanks(final Continuation<? super List<SongRank>> $completion) {
     final String _sql = "SELECT * FROM song_ranks";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
-    __db.assertNotSuspendingTransaction();
-    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
-    try {
-      final int _cursorIndexOfSongId = CursorUtil.getColumnIndexOrThrow(_cursor, "songId");
-      final int _cursorIndexOfRankValue = CursorUtil.getColumnIndexOrThrow(_cursor, "rankValue");
-      final int _cursorIndexOfLastUpdated = CursorUtil.getColumnIndexOrThrow(_cursor, "lastUpdated");
-      final List<SongRank> _result = new ArrayList<SongRank>(_cursor.getCount());
-      while (_cursor.moveToNext()) {
-        final SongRank _item;
-        final long _tmpSongId;
-        _tmpSongId = _cursor.getLong(_cursorIndexOfSongId);
-        final float _tmpRankValue;
-        _tmpRankValue = _cursor.getFloat(_cursorIndexOfRankValue);
-        final long _tmpLastUpdated;
-        _tmpLastUpdated = _cursor.getLong(_cursorIndexOfLastUpdated);
-        _item = new SongRank(_tmpSongId,_tmpRankValue,_tmpLastUpdated);
-        _result.add(_item);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<SongRank>>() {
+      @Override
+      @NonNull
+      public List<SongRank> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfSongId = CursorUtil.getColumnIndexOrThrow(_cursor, "songId");
+          final int _cursorIndexOfRankValue = CursorUtil.getColumnIndexOrThrow(_cursor, "rankValue");
+          final int _cursorIndexOfLastUpdated = CursorUtil.getColumnIndexOrThrow(_cursor, "lastUpdated");
+          final List<SongRank> _result = new ArrayList<SongRank>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final SongRank _item;
+            final long _tmpSongId;
+            _tmpSongId = _cursor.getLong(_cursorIndexOfSongId);
+            final float _tmpRankValue;
+            _tmpRankValue = _cursor.getFloat(_cursorIndexOfRankValue);
+            final long _tmpLastUpdated;
+            _tmpLastUpdated = _cursor.getLong(_cursorIndexOfLastUpdated);
+            _item = new SongRank(_tmpSongId,_tmpRankValue,_tmpLastUpdated);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
       }
-      return _result;
-    } finally {
-      _cursor.close();
-      _statement.release();
-    }
+    }, $completion);
   }
 
   @Override

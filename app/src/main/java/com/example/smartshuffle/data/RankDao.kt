@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface RankDao {
     @Query("SELECT * FROM song_ranks")
-    fun getAllRanks(): List<SongRank>
+    suspend fun getAllRanks(): List<SongRank>
 
     @Query("SELECT * FROM song_ranks WHERE songId = :songId LIMIT 1")
     suspend fun getRank(songId: Long): SongRank?

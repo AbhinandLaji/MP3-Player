@@ -9,6 +9,11 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.example.smartshuffle.ui.widgets.CyberMediaWidget
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.booleanPreferencesKey
 
 class CyberMediaWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = CyberMediaWidget()
@@ -17,43 +22,29 @@ class CyberMediaWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        
-        if (intent.action == ACTION_UPDATE_MEDIA_WIDGET) {
-            val title = intent.getStringExtra(EXTRA_TITLE) ?: "No Song Playing"
-            val artist = intent.getStringExtra(EXTRA_ARTIST) ?: "Smart Shuffle"
-            val isPlaying = intent.getBooleanExtra(EXTRA_IS_PLAYING, false)
-            
-            coroutineScope.launch {
-                androidx.glance.appwidget.GlanceAppWidgetManager(context)
-                    .getGlanceIds(CyberMediaWidget::class.java)
-                    .forEach { glanceId ->
-                        updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
-                            prefs.toMutablePreferences().apply {
-                                this[CyberMediaWidget.titleKey] = title
-                                this[CyberMediaWidget.artistKey] = artist
-                                this[CyberMediaWidget.isPlayingKey] = isPlaying
-                            }
-                        }
-                        glanceAppWidget.update(context, glanceId)
-                    }
-            }
-        }
     }
 
     companion object {
-        const val ACTION_UPDATE_MEDIA_WIDGET = "com.example.smartshuffle.ACTION_UPDATE_MEDIA_WIDGET"
-        const val EXTRA_TITLE = "extra_title"
-        const val EXTRA_ARTIST = "extra_artist"
-        const val EXTRA_IS_PLAYING = "extra_is_playing"
-        
-        fun updateWidgetState(context: Context, title: String, artist: String, isPlaying: Boolean) {
-            val intent = Intent(context, CyberMediaWidgetReceiver::class.java).apply {
-                action = ACTION_UPDATE_MEDIA_WIDGET
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_ARTIST, artist)
-                putExtra(EXTRA_IS_PLAYING, isPlaying)
+        fun updateWidgetState(
+            context: Context,
+            title: String,
+            artist: String,
+            isPlaying: Boolean,
+            artworkUri: String? = null
+        ) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val manager = GlanceAppWidgetManager(context)
+                val glanceIds = manager.getGlanceIds(CyberMediaWidget::class.java)
+                glanceIds.forEach { id ->
+                    updateAppWidgetState(context, id) { prefs ->
+                        prefs[stringPreferencesKey("track_title")] = title
+                        prefs[stringPreferencesKey("artist_name")] = artist
+                        prefs[booleanPreferencesKey("is_playing")] = isPlaying
+                        prefs[stringPreferencesKey("artwork_uri")] = artworkUri ?: ""
+                    }
+                    CyberMediaWidget().update(context, id)
+                }
             }
-            context.sendBroadcast(intent)
         }
     }
 }

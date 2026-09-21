@@ -110,6 +110,11 @@ class PlaybackController(
                     } else {
                         progressJob?.cancel()
                     }
+                    _currentSong.value?.let { song ->
+                        com.example.smartshuffle.ui.widgets.receivers.CyberMediaWidgetReceiver.updateWidgetState(
+                            context, song.title, song.artist, isPlaying, song.albumArtUri
+                        )
+                    }
                 }
 
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -126,6 +131,12 @@ class PlaybackController(
 
                     updateCurrentSong(mediaItem)
                     _duration.value = controller.duration.coerceAtLeast(0)
+                    
+                    _currentSong.value?.let { song ->
+                        com.example.smartshuffle.ui.widgets.receivers.CyberMediaWidgetReceiver.updateWidgetState(
+                            context, song.title, song.artist, _isPlaying.value, song.albumArtUri
+                        )
+                    }
 
                     val songId = mediaItem?.mediaId?.toLongOrNull()
                     if (songId != null) {
@@ -282,6 +293,7 @@ class PlaybackController(
                 
                 val excludedIds = initialExcludedIds
 
+                val fillStartTime = System.currentTimeMillis()
 
                 repeat(needed) {
                     val nextSong = rankingEngine.selectNextShuffleSong(
@@ -300,6 +312,8 @@ class PlaybackController(
                         return@launch
                     }
                 }
+                val fillDuration = System.currentTimeMillis() - fillStartTime
+                android.util.Log.d("PERF_AUDIT", "maintainQueueBuffer fill cycle for $needed songs completed in ${fillDuration}ms")
             }
         }
     }

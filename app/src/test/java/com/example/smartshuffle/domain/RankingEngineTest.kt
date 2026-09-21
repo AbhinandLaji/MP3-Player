@@ -19,7 +19,7 @@ class RankingEngineTest {
     private class FakeRankDao : RankDao {
         val ranks = mutableMapOf<Long, SongRank>()
 
-        override fun getAllRanks(): List<SongRank> = ranks.values.toList()
+        override suspend fun getAllRanks(): List<SongRank> = ranks.values.toList()
 
         override suspend fun getRank(songId: Long): SongRank? = ranks[songId]
 
@@ -248,6 +248,7 @@ class RankingEngineTest {
 
         // Pre-seed the rank as if it was set 1 day ago
         rankDao.ranks[1L] = SongRank(songId = 1L, rankValue = 10f, lastUpdated = playTime)
+        engine.initialize()
 
         // Calculate what the effective rank should be right now (before re-play)
         val elapsed = System.currentTimeMillis() - playTime
@@ -286,6 +287,7 @@ class RankingEngineTest {
         for (id in 2L..5L) {
             rankDao.ranks[id] = SongRank(songId = id, rankValue = 50f, lastUpdated = now)
         }
+        engine.initialize()
 
         // Run selection 2000 times, using songId=99 as "current" (excluded)
         val counts = mutableMapOf<Long, Int>()
@@ -354,6 +356,7 @@ class RankingEngineTest {
         // Songs 2,3: rank 30 (large disparity)
         rankDao.ranks[2L] = SongRank(songId = 2L, rankValue = 30f, lastUpdated = now)
         rankDao.ranks[3L] = SongRank(songId = 3L, rankValue = 30f, lastUpdated = now)
+        engine.initialize()
 
         val counts = mutableMapOf<Long, Int>()
         val iterations = 5000

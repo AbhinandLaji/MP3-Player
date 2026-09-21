@@ -8,6 +8,7 @@ import com.example.smartshuffle.SmartShuffleApplication
 import com.example.smartshuffle.data.Song
 import com.example.smartshuffle.data.PlayHistoryDao
 import com.example.smartshuffle.domain.FolderSummary
+import com.example.smartshuffle.domain.RankingEngine
 import com.example.smartshuffle.domain.SongRepository
 import com.example.smartshuffle.playback.PlaybackController
 import com.example.smartshuffle.playback.SystemVolumeManager
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 class LibraryViewModel(
     private val songRepository: SongRepository,
     private val playHistoryDao: PlayHistoryDao,
+    private val rankingEngine: RankingEngine,
     private val playbackController: PlaybackController,
     private val volumeManager: SystemVolumeManager
 ) : ViewModel() {
@@ -89,6 +91,9 @@ class LibraryViewModel(
     init {
         viewModelScope.launch {
             songRepository.syncLibrary()
+        }
+        viewModelScope.launch {
+            rankingEngine.initialize()
         }
     }
 
@@ -177,6 +182,7 @@ class LibraryViewModel(
                 return LibraryViewModel(
                     container.songRepository, 
                     container.playHistoryDao, 
+                    container.rankingEngine,
                     playbackController,
                     SystemVolumeManager(application)
                 ) as T

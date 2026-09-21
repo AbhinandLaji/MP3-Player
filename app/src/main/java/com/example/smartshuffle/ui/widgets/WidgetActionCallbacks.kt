@@ -8,6 +8,7 @@ import androidx.glance.GlanceId
 import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.updateAll
+import androidx.glance.appwidget.state.updateAppWidgetState
 import com.example.smartshuffle.playback.PlaybackService
 
 class PlayPauseActionCallback : ActionCallback {
@@ -60,8 +61,14 @@ class VolumeUpActionCallback : ActionCallback {
         parameters: ActionParameters
     ) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, 0)
-        CyberVolumeWidget().updateAll(context)
+        val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val target = (current + 1).coerceAtMost(max)
+
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, target, 0)
+        
+        val percent = if (max > 0) ((target.toFloat() / max.toFloat()) * 100).toInt() else 0
+        updateWidgetVolume(context, glanceId, percent)
     }
 }
 
@@ -72,8 +79,14 @@ class VolumeDownActionCallback : ActionCallback {
         parameters: ActionParameters
     ) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, 0)
-        CyberVolumeWidget().updateAll(context)
+        val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val target = (current - 1).coerceAtLeast(0)
+
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, target, 0)
+
+        val percent = if (max > 0) ((target.toFloat() / max.toFloat()) * 100).toInt() else 0
+        updateWidgetVolume(context, glanceId, percent)
     }
 }
 
@@ -85,6 +98,13 @@ class VolumeMuteActionCallback : ActionCallback {
     ) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
-        CyberVolumeWidget().updateAll(context)
+        updateWidgetVolume(context, glanceId, 0)
     }
+}
+
+private suspend fun updateWidgetVolume(context: Context, glanceId: GlanceId, percent: Int) {
+    updateAppWidgetState(context, glanceId) { prefs ->
+        prefs[VolumePercentKey] = percent
+    }
+    CyberVolumeWidget().update(context, glanceId)
 }

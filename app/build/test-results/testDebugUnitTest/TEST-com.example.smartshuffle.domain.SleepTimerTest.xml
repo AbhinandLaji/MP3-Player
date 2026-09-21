@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.smartshuffle.domain.SleepTimerTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-09-20T14:11:12" hostname="ABHINAND" time="0.002">
+  <properties/>
+  <testcase name="startSleepTimer with 0 minutes sets target at approximately now" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="auto-advance blocked when current time HAS reached target" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.001"/>
+  <testcase name="manual skip is never blocked by timer, even after target" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="auto-advance proceeds when current time has NOT reached target" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="auto-advance blocked when target is exactly now" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="timer clears itself after firing once" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.001"/>
+  <testcase name="manual skip works when no timer is set" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="auto-advance proceeds when no timer is set" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="startSleepTimer sets target correctly based on duration" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <testcase name="cancelSleepTimer clears the target" classname="com.example.smartshuffle.domain.SleepTimerTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

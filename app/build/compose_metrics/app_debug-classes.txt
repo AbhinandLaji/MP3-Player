@@ -80,7 +80,7 @@ stable class FolderSummary {
   stable val isFavorite: Boolean
   <runtime stability> = Stable
 }
-stable class RankingEngine {
+unstable class RankingEngine {
   runtime val rankDao: RankDao
   runtime val playHistoryDao: PlayHistoryDao
   runtime val songDao: SongDao
@@ -88,11 +88,12 @@ stable class RankingEngine {
   stable val SHUFFLE_RANK_INCREMENT: Float
   stable val MANUAL_RANK_INCREMENT: Float
   stable val RANK_DECAY_PERIOD_MS: Long
-  <runtime stability> = 
+  unstable val rankCache: ConcurrentHashMap<Long, SongRank>
+  <runtime stability> = Unstable
 }
 unstable class PlaybackController {
   unstable val context: Context
-  runtime val rankingEngine: RankingEngine
+  unstable val rankingEngine: RankingEngine
   unstable val userPreferences: UserPreferences
   unstable var controllerFuture: ListenableFuture<MediaController>?
   unstable var mediaController: MediaController?
@@ -146,6 +147,7 @@ stable class NowPlayingRoute {
 unstable class LibraryViewModel {
   runtime val songRepository: SongRepository
   runtime val playHistoryDao: PlayHistoryDao
+  unstable val rankingEngine: RankingEngine
   unstable val playbackController: PlaybackController
   unstable val volumeManager: SystemVolumeManager
   unstable val baseSongs: Flow<List<Song>>
@@ -168,8 +170,9 @@ unstable class CyberMediaWidget {
   unstable val stateDefinition: GlanceStateDefinition<*>
   <runtime stability> = Unstable
 }
-stable class CyberVolumeWidget {
-  <runtime stability> = Stable
+unstable class CyberVolumeWidget {
+  unstable val stateDefinition: GlanceStateDefinition<*>
+  <runtime stability> = Unstable
 }
 stable class PlayPauseActionCallback {
   <runtime stability> = Stable

@@ -27,15 +27,29 @@ import androidx.glance.text.TextStyle
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.cornerRadius
 
+import androidx.glance.state.GlanceStateDefinition
+import androidx.glance.state.PreferencesGlanceStateDefinition
+import androidx.glance.currentState
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
+
+val VolumePercentKey = intPreferencesKey("cyber_volume_percent")
+
 class CyberVolumeWidget : GlanceAppWidget() {
+    override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         
         provideContent {
-            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            val volumePercentage = if (maxVolume > 0) (currentVolume.toFloat() / maxVolume) * 100 else 0f
-            
+            val prefs = currentState<Preferences>()
+            val volumePercentageFloat = prefs[VolumePercentKey]?.toFloat() ?: run {
+                val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                if (maxVolume > 0) (currentVolume.toFloat() / maxVolume.toFloat()) * 100 else 0f
+            }
+            val volumePercentage = volumePercentageFloat
+
             GlanceTheme {
                 Column(
                     modifier = GlanceModifier

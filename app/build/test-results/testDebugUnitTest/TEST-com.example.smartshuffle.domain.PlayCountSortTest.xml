@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.smartshuffle.domain.PlayCountSortTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-20T14:11:12" hostname="ABHINAND" time="0.383">
+  <properties/>
+  <testcase name="sort stability - songs with equal play counts maintain relative order" classname="com.example.smartshuffle.domain.PlayCountSortTest" time="0.372"/>
+  <testcase name="getPlayCounts sums both MANUAL and SHUFFLE entries per song" classname="com.example.smartshuffle.domain.PlayCountSortTest" time="0.004"/>
+  <testcase name="songs sort most-played first, unplayed last" classname="com.example.smartshuffle.domain.PlayCountSortTest" time="0.003"/>
+  <testcase name="song with zero PlayHistory entries is treated as play count 0" classname="com.example.smartshuffle.domain.PlayCountSortTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -102,8 +102,8 @@ dependencies {
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    // LeakCanary
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+    // LeakCanary (disabled to prevent mid-playback heap dump freezes)
+    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
 
     // Unit Test
     testImplementation("junit:junit:4.13.2")

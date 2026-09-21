@@ -7,6 +7,7 @@ import com.example.smartshuffle.data.RankDao
 import com.example.smartshuffle.data.Song
 import com.example.smartshuffle.data.SongDao
 import com.example.smartshuffle.data.SongRank
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
 
 class RankingEngine(
@@ -19,9 +20,16 @@ class RankingEngine(
     internal val MANUAL_RANK_INCREMENT = SHUFFLE_RANK_INCREMENT / 2f
     internal val RANK_DECAY_PERIOD_MS = 3 * 24 * 60 * 60 * 1000L // 3 days
 
+    private val rankCache = ConcurrentHashMap<Long, SongRank>()
+
+    suspend fun initialize() {
+        val ranks = rankDao.getAllRanks()
+        ranks.forEach { rankCache[it.songId] = it }
+    }
+
     suspend fun incrementRank(songId: Long, playType: PlayType) {
         val increment = if (playType == PlayType.SHUFFLE) SHUFFLE_RANK_INCREMENT else MANUAL_RANK_INCREMENT
-        val currentRank = rankDao.getRank(songId)
+        val currentRank = rankCache[songId]
         
         val newRankValue = if (currentRank != null) {
             getEffectiveRank(currentRank) + increment
@@ -29,12 +37,14 @@ class RankingEngine(
             increment
         }
         
-        rankDao.insertOrUpdate(SongRank(songId, newRankValue, System.currentTimeMillis()))
+        val newRank = SongRank(songId, newRankValue, System.currentTimeMillis())
+        rankDao.insertOrUpdate(newRank)
+        rankCache[songId] = newRank
         playHistoryDao.insert(PlayHistory(songId = songId, timestamp = System.currentTimeMillis(), playType = playType))
     }
 
-    internal suspend fun getEffectiveRank(songId: Long): Float {
-        val rank = rankDao.getRank(songId) ?: return 0f
+    internal fun getEffectiveRank(songId: Long): Float {
+        val rank = rankCache[songId] ?: return 0f
         return getEffectiveRank(rank)
     }
 
@@ -46,7 +56,7 @@ class RankingEngine(
         return rank.rankValue * decayFactor
     }
 
-    private suspend fun calculateBaseWeight(song: Song): Double {
+    private fun calculateBaseWeight(song: Song): Double {
         val effectiveRank = getEffectiveRank(song.id)
         return 1.0 / (1.0 + effectiveRank)
     }
